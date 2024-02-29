@@ -11,6 +11,7 @@ import com.example.demo.service.props.MinioProperties;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +28,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class FileServiceImpl implements FileService {
 
-    @Autowired
-    private FileRepository fileRepository;
 
-    @Autowired
+    private FileRepository fileRepository;
     private MinioClient minioClient;
     private MinioProperties minioProperties;
 

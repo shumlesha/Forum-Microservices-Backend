@@ -4,6 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.FileDTO;
 import com.example.demo.model.FileWrapper;
 import com.example.demo.service.FileService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -19,10 +20,10 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/file")
 public class FileController {
 
-    @Autowired
     private FileService fileService;
 
     @PostMapping("/save")
