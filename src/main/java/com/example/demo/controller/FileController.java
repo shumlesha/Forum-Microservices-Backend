@@ -24,7 +24,7 @@ import java.util.UUID;
 @RequestMapping("/file")
 public class FileController {
 
-    private FileService fileService;
+    private final FileService fileService;
 
     @PostMapping("/save")
     public ResponseEntity<UUID> saveFile(@RequestParam("file") MultipartFile file) {
