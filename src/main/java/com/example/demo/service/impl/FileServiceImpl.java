@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
 public class FileServiceImpl implements FileService {
 
 
-    private FileRepository fileRepository;
-    private MinioClient minioClient;
-    private MinioProperties minioProperties;
+    private final FileRepository fileRepository;
+    private final MinioClient minioClient;
+    private final MinioProperties minioProperties;
 
     @Value("${minio.bucketName}")
     private String bucketName;
