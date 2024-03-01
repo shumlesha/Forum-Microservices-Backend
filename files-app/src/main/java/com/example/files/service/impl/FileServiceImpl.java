@@ -91,7 +91,7 @@ public class FileServiceImpl implements FileService {
             fileInfo.setFileName(fileObj.getName());
             return fileInfo;
         } catch (Exception e) {
-            throw new FileUploadException(HttpStatus.BAD_REQUEST, "Не удалось скачать файл");
+            throw new FileUploadException(HttpStatus.INTERNAL_SERVER_ERROR, "Не удалось скачать файл");
         }
     }
 

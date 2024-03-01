@@ -4,6 +4,7 @@ import com.example.files.exceptions.FileNotFoundException;
 import com.example.files.exceptions.FileUploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,14 +17,24 @@ public class CustomExceptionHandler {
 
 
     @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<String> handle(FileNotFoundException exception) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleFileNotFound(FileNotFoundException exception) {
         log.error(exception.getMessage(), exception);
-        return new ResponseEntity<>(exception.getMessage(), exception.getStatusCode());
+        return new ErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
     @ExceptionHandler(FileUploadException.class)
-    public ResponseEntity<String> handleFileUpload(FileUploadException exception) {
+    public ErrorResponse handleFileUpload(FileUploadException exception) {
         log.error(exception.getMessage(), exception);
-        return new ResponseEntity<>(exception.getMessage(), exception.getStatusCode());
+        return new ErrorResponse(exception.getStatusCode(), exception.getMessage());
     }
+
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleException(Exception e) {
+        log.error(e.getMessage(), e.getLocalizedMessage());
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, "Internal error");
+    }
+
 }
