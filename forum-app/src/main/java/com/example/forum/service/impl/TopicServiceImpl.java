@@ -11,8 +11,11 @@ import com.example.forum.repository.CategoryRepository;
 import com.example.forum.repository.TopicRepository;
 import com.example.forum.service.TopicService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,7 +33,7 @@ public class TopicServiceImpl implements TopicService {
             throw new CategoryHasSubcategoriesException("Топики можно создавать только в категориях нижнего уровня");
         }
 
-        if (categoryRepository.existsByName(createTopicModel.getName())) {
+        if (topicRepository.existsByName(createTopicModel.getName())) {
             throw new ObjectAlreadyExistsException("Топик с таким названием уже существует: " + createTopicModel.getName());
         }
 
@@ -59,5 +62,15 @@ public class TopicServiceImpl implements TopicService {
         Topic topic = topicRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Топика с таким id не существует: " + id));
         topicRepository.delete(topic);
+    }
+
+    @Override
+    public Page<Topic> getAllTopics(Pageable pageable) {
+        return topicRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Topic> getTopicsByName(String name) {
+        return topicRepository.findByNameContainingIgnoreCase(name);
     }
 }

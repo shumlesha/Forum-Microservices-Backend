@@ -2,7 +2,9 @@ package com.example.forum.service;
 
 import com.example.forum.dto.Category.CreateCategoryModel;
 import com.example.forum.dto.Category.EditCategoryModel;
+import com.example.forum.models.Category;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface CategoryService {
@@ -11,4 +13,8 @@ public interface CategoryService {
     void editCategory(UUID id, EditCategoryModel editCategoryModel);
 
     void deleteCategory(UUID id);
+
+    List<Category> getAllCategories();
+
+    List<Category> getCategoriesByName(String name);
 }

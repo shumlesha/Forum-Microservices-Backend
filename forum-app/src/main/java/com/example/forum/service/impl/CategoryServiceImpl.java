@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -59,5 +60,15 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Категории с таким id не существует: " + id));
         categoryRepository.delete(category);
+    }
+
+    @Override
+    public List<Category> getAllCategories() {
+        return categoryRepository.findByParentIsNullOrderByNameAsc();
+    }
+
+    @Override
+    public List<Category> getCategoriesByName(String name) {
+        return categoryRepository.findByNameContainingIgnoreCase(name);
     }
 }

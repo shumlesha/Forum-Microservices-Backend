@@ -5,10 +5,14 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,15 +53,27 @@ public class CustomExceptionHandler {
         return new ErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed");
+        Map<String, List<String>> errors = e.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.groupingBy(FieldError::getField,
+                        Collectors.mapping(FieldError::getDefaultMessage, Collectors.toList())));
+        errorResponse.setErrors(errors);
+        return errorResponse;
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConstraintViolation(jakarta.validation.ConstraintViolationException e) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, "Validation failed");
-        errorResponse.setErrors(e.getConstraintViolations().stream()
-                .collect(Collectors.toMap(
+        Map<String, List<String>> errors = e.getConstraintViolations().stream()
+                .collect(Collectors.groupingBy(
                         violation -> violation.getPropertyPath().toString(),
-                        ConstraintViolation::getMessage
-                )));
+                        Collectors.mapping(ConstraintViolation::getMessage, Collectors.toList())
+                ));
+        errorResponse.setErrors(errors);
         return errorResponse;
     }
 
