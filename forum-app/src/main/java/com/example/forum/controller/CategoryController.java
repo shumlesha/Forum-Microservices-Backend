@@ -22,18 +22,21 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<?> createCategory(@Validated @RequestBody CreateCategoryModel createCategoryModel) {
+        log.info("Создание категории с названием {}", createCategoryModel.getName());
         categoryService.createCategory(createCategoryModel);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editCategory(@PathVariable UUID id, @Validated @RequestBody EditCategoryModel editCategoryModel) {
+        log.info("Редактирование категории с id {}", id);
         categoryService.editCategory(id, editCategoryModel);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable UUID id) {
+        log.info("Удаление категории с id {}", id);
         categoryService.deleteCategory(id);
         return ResponseEntity.ok().build();
     }
