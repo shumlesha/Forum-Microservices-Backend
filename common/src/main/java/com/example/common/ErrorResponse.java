@@ -1,4 +1,4 @@
-package com.example.files;
+package com.example.common;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;

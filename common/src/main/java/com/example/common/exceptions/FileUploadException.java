@@ -1,4 +1,4 @@
-package com.example.files.exceptions;
+package com.example.common.exceptions;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;

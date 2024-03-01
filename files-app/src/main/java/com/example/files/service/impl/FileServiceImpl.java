@@ -2,8 +2,8 @@ package com.example.files.service.impl;
 
 import com.example.files.FileRepository;
 import com.example.files.dto.FileDTO;
-import com.example.files.exceptions.FileNotFoundException;
-import com.example.files.exceptions.FileUploadException;
+import com.example.common.exceptions.FileNotFoundException;
+import com.example.common.exceptions.FileUploadException;
 import com.example.files.model.File;
 import com.example.files.model.FileWrapper;
 import com.example.files.service.FileService;
@@ -14,7 +14,6 @@ import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
