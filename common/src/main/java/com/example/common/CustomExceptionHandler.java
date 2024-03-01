@@ -1,9 +1,6 @@
 package com.example.common;
 
-import com.example.common.exceptions.FileNotFoundException;
-import com.example.common.exceptions.FileUploadException;
-import com.example.common.exceptions.ObjectAlreadyExistsException;
-import com.example.common.exceptions.ResourceNotFoundException;
+import com.example.common.exceptions.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +32,13 @@ public class CustomExceptionHandler {
     @ExceptionHandler(ObjectAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleObjectAlreadyExists(ObjectAlreadyExistsException e) {
+        log.error(e.getMessage(), e);
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(CategoryHasSubcategoriesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCategoryHasSubcategories(CategoryHasSubcategoriesException e) {
         log.error(e.getMessage(), e);
         return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
