@@ -1,7 +1,7 @@
 package com.example.forum.controller;
 
 
-import com.example.forum.service.ForumService;
+import com.example.forum.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/forum")
+@RequestMapping("/api/categories")
 @RequiredArgsConstructor
-public class ForumController {
+public class CategoryController {
 
-    private final ForumService forumService;
+    private final CategoryService categoryService;
 
 }
