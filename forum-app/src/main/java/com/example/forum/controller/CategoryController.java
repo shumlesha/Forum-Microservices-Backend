@@ -3,6 +3,7 @@ package com.example.forum.controller;
 
 import com.example.forum.dto.Category.CreateCategoryModel;
 import com.example.forum.dto.Category.EditCategoryModel;
+import com.example.forum.models.Category;
 import com.example.forum.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -40,4 +42,17 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping
+    public ResponseEntity<List<Category>> getAllCategories() {
+        log.info("Получаем список категорий");
+        return ResponseEntity.ok(categoryService.getAllCategories());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Category>> getCategoriesByName(@RequestParam String name) {
+        log.info("Получаем список категорий по названию {}", name);
+        return ResponseEntity.ok(categoryService.getCategoriesByName(name));
+    }
+
 }
