@@ -17,6 +17,7 @@
 	<modules>
 		<module>common</module>
 		<module>files-app</module>
+		<module>forum-app</module>
 	</modules>
 	<properties>
 		<java.version>17</java.version>
