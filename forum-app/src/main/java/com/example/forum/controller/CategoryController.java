@@ -1,8 +1,10 @@
 package com.example.forum.controller;
 
 
+import com.example.forum.dto.Category.CategoryDTO;
 import com.example.forum.dto.Category.CreateCategoryModel;
 import com.example.forum.dto.Category.EditCategoryModel;
+import com.example.forum.mapper.CategoryMapper;
 import com.example.forum.models.Category;
 import com.example.forum.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -21,6 +24,8 @@ import java.util.UUID;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final CategoryMapper categoryMapper;
+
 
     @PostMapping
     public ResponseEntity<?> createCategory(@Validated @RequestBody CreateCategoryModel createCategoryModel) {
@@ -44,15 +49,17 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         log.info("Получаем список категорий");
-        return ResponseEntity.ok(categoryService.getAllCategories());
+        return ResponseEntity.ok(categoryService.getAllCategories().stream()
+                .map(categoryMapper::toDTO).collect(Collectors.toList()));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Category>> getCategoriesByName(@RequestParam String name) {
+    public ResponseEntity<List<CategoryDTO>> getCategoriesByName(@RequestParam String name) {
         log.info("Получаем список категорий по названию {}", name);
-        return ResponseEntity.ok(categoryService.getCategoriesByName(name));
+        return ResponseEntity.ok(categoryService.getCategoriesByName(name)
+                .stream().map(categoryMapper::toDTO).collect(Collectors.toList()));
     }
 
 }

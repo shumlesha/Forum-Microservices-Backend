@@ -3,13 +3,15 @@ package com.example.forum.service.impl;
 import com.example.common.exceptions.ResourceNotFoundException;
 import com.example.forum.dto.Message.CreateMessageModel;
 import com.example.forum.dto.Message.EditMessageModel;
+import com.example.forum.dto.Message.MessageFilter;
 import com.example.forum.models.Message;
 import com.example.forum.models.Topic;
 import com.example.forum.repository.MessageRepository;
 import com.example.forum.repository.TopicRepository;
 import com.example.forum.service.MessageService;
-import com.example.forum.service.TopicService;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
@@ -24,6 +27,7 @@ public class MessageServiceImpl implements MessageService {
     private final TopicRepository topicRepository;
 
     private final MessageRepository messageRepository;
+
 
     @Override
     public void createMessage(UUID topicId, CreateMessageModel createMessageModel) {
@@ -62,5 +66,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<Message> getMessagesByContent(String content) {
         return messageRepository.findByContentContainingIgnoreCase(content);
+    }
+
+    @Override
+    public List<Message> searchMessages(MessageFilter messageFilter) {
+        log.info("Поиск сообщений начат");
+        return messageRepository.findByFilter(messageFilter);
     }
 }

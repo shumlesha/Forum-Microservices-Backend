@@ -1,5 +1,6 @@
 package com.example.forum.repository;
 
+import com.example.forum.models.Category;
 import com.example.forum.models.Topic;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,4 +13,8 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
     boolean existsByName(String name);
 
     List<Topic> findByNameContainingIgnoreCase(String name);
+
+    boolean existsByCategory(Category parent);
+
+    void deleteByCategory(Category category);
 }

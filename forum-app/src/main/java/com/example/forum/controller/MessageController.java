@@ -2,8 +2,12 @@ package com.example.forum.controller;
 
 import com.example.forum.dto.Message.CreateMessageModel;
 import com.example.forum.dto.Message.EditMessageModel;
+import com.example.forum.dto.Message.MessageDTO;
+import com.example.forum.dto.Message.MessageFilter;
+import com.example.forum.mapper.MessageMapper;
 import com.example.forum.models.Category;
 import com.example.forum.models.Message;
+import com.example.forum.models.Topic;
 import com.example.forum.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -25,6 +30,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MessageController {
     private final MessageService messageService;
+    private final MessageMapper messageMapper;
 
     @PostMapping("/{topicId}")
     public ResponseEntity<?> createMessage(@PathVariable UUID topicId,
@@ -47,15 +53,22 @@ public class MessageController {
     }
 
     @GetMapping("/{topicId}")
-    public ResponseEntity<Page<Message>> getMessages(@PathVariable UUID topicId,
+    public ResponseEntity<Page<MessageDTO>> getMessages(@PathVariable UUID topicId,
                                                      @PageableDefault(sort = "createTime",
                                                              direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(messageService.getMessages(topicId, pageable));
+        return ResponseEntity.ok(messageService.getMessages(topicId, pageable).map(messageMapper::toDTO));
     }
 
 
     @GetMapping("/search")
-    public ResponseEntity<List<Message>> getMessagesByContent(@RequestParam String content) {
-        return ResponseEntity.ok(messageService.getMessagesByContent(content));
+    public ResponseEntity<List<MessageDTO>> getMessagesByContent(@RequestParam String content) {
+        return ResponseEntity.ok(messageService.getMessagesByContent(content)
+                .stream().map(messageMapper::toDTO).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<MessageDTO>> searchMessages(@ModelAttribute MessageFilter messageFilter) {
+        return ResponseEntity.ok(messageService.searchMessages(messageFilter)
+                .stream().map(messageMapper::toDTO).collect(Collectors.toList()));
     }
 }
