@@ -12,7 +12,8 @@ import java.util.UUID;
 
 
 @Repository
-public interface MessageRepository extends JpaRepository<Message, UUID> {
+public interface MessageRepository extends JpaRepository<Message, UUID>,
+        FilterMessageRepository{
     Page<Message> findByTopicId(UUID topicId, Pageable pageable);
 
     List<Message> findByContentContainingIgnoreCase(String content);

@@ -5,6 +5,7 @@ import com.example.forum.dto.Category.EditCategoryModel;
 import com.example.forum.models.Category;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface CategoryService {
@@ -17,4 +18,6 @@ public interface CategoryService {
     List<Category> getAllCategories();
 
     List<Category> getCategoriesByName(String name);
+
+    Set<UUID> getSubcategoryIds(UUID categoryId);
 }

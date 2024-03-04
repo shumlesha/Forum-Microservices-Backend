@@ -3,6 +3,8 @@ package com.example.forum.controller;
 
 import com.example.forum.dto.Topic.CreateTopicModel;
 import com.example.forum.dto.Topic.EditTopicModel;
+import com.example.forum.dto.Topic.TopicDTO;
+import com.example.forum.mapper.TopicMapper;
 import com.example.forum.models.Category;
 import com.example.forum.models.Topic;
 import com.example.forum.service.TopicService;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -25,7 +28,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TopicController {
     private final TopicService topicService;
-
+    private final TopicMapper topicMapper;
     @PostMapping("/{categoryId}")
     public ResponseEntity<?> createTopic(@PathVariable UUID categoryId,
                                          @Validated @RequestBody CreateTopicModel createTopicModel) {
@@ -47,13 +50,14 @@ public class TopicController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Topic>> getAllTopics(@PageableDefault(sort = "createTime",
+    public ResponseEntity<Page<TopicDTO>> getAllTopics(@PageableDefault(sort = "createTime",
             direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(topicService.getAllTopics(pageable));
+        return ResponseEntity.ok(topicService.getAllTopics(pageable).map(topicMapper::toDTO));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Topic>> getTopicsByName(@RequestParam String name) {
-        return ResponseEntity.ok(topicService.getTopicsByName(name));
+    public ResponseEntity<List<TopicDTO>> getTopicsByName(@RequestParam String name) {
+        return ResponseEntity.ok(topicService.getTopicsByName(name).stream()
+                .map(topicMapper::toDTO).collect(Collectors.toList()));
     }
 }
