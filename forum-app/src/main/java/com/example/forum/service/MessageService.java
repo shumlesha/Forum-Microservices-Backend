@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
-    void createMessage(UUID topicId, CreateMessageModel createMessageModel);
+    void createMessage(UUID topicId, UUID authorId, CreateMessageModel createMessageModel);
 
-    void editMessage(UUID id, EditMessageModel editMessageModel);
+    void editMessage(UUID id, String email, EditMessageModel editMessageModel);
 
     void deleteMessage(UUID id);
 

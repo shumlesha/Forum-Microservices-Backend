@@ -1,5 +1,6 @@
 package com.example.forum.controller;
 
+import com.example.auth.security.JwtUser;
 import com.example.forum.dto.Message.CreateMessageModel;
 import com.example.forum.dto.Message.EditMessageModel;
 import com.example.forum.dto.Message.MessageDTO;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.support.PageableUtils;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,19 +37,22 @@ public class MessageController {
 
     @PostMapping("/{topicId}")
     public ResponseEntity<?> createMessage(@PathVariable UUID topicId,
-                                           @Validated @RequestBody CreateMessageModel createMessageModel) {
-        messageService.createMessage(topicId, createMessageModel);
+                                           @Validated @RequestBody CreateMessageModel createMessageModel,
+                                           @AuthenticationPrincipal JwtUser jwtUser) {
+        messageService.createMessage(topicId, jwtUser.getId(), createMessageModel);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editMessage(@PathVariable UUID id,
-                                           @Validated @RequestBody EditMessageModel editMessageModel) {
-        messageService.editMessage(id, editMessageModel);
+                                         @Validated @RequestBody EditMessageModel editMessageModel,
+                                         @AuthenticationPrincipal JwtUser jwtUser) {
+        messageService.editMessage(id,jwtUser.getEmail(), editMessageModel);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> deleteMessage(@PathVariable UUID id) {
         messageService.deleteMessage(id);
         return ResponseEntity.ok().build();

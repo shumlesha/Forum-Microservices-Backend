@@ -2,10 +2,20 @@ package com.example.forum;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.example.forum", "com.example.common"})
+@ConfigurationPropertiesScan(basePackages = {"com.example.forum"})
+@EnableDiscoveryClient
+@ComponentScan(basePackages = {"com.example.forum", "com.example.auth", "com.example.common"})
+@EntityScan(basePackages = {"com.example.auth.models","com.example.forum.models"})
+@EnableJpaRepositories(basePackages = {"com.example.auth.repository","com.example.forum.repository"})
 public class ForumServer {
 
 	public static void main(String[] args) {

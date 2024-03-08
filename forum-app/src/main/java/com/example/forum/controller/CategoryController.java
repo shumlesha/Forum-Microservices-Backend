@@ -1,6 +1,7 @@
 package com.example.forum.controller;
 
 
+import com.example.auth.security.JwtUser;
 import com.example.forum.dto.Category.CategoryDTO;
 import com.example.forum.dto.Category.CreateCategoryModel;
 import com.example.forum.dto.Category.EditCategoryModel;
@@ -10,6 +11,8 @@ import com.example.forum.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +31,16 @@ public class CategoryController {
 
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@Validated @RequestBody CreateCategoryModel createCategoryModel) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createCategory(@AuthenticationPrincipal JwtUser jwtUser, @Validated @RequestBody CreateCategoryModel createCategoryModel) {
         log.info("Создание категории с названием {}", createCategoryModel.getName());
+        log.info("Пользователь с ролями: {}", jwtUser.getAuthorities());
         categoryService.createCategory(createCategoryModel);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> editCategory(@PathVariable UUID id, @Validated @RequestBody EditCategoryModel editCategoryModel) {
         log.info("Редактирование категории с id {}", id);
         categoryService.editCategory(id, editCategoryModel);
@@ -42,6 +48,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCategory(@PathVariable UUID id) {
         log.info("Удаление категории с id {}", id);
         categoryService.deleteCategory(id);

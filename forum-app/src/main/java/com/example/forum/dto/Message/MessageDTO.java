@@ -15,6 +15,7 @@ public class MessageDTO {
     private UUID id;
     private String content;
     private UUID topicId;
+    private String authorEmail;
     private LocalDateTime createTime;
     private LocalDateTime modifiedDate;
 }

@@ -1,5 +1,8 @@
 package com.example.forum.service.impl;
 
+import com.example.auth.models.User;
+import com.example.auth.repository.UserRepository;
+import com.example.common.exceptions.AccessDeniedException;
 import com.example.common.exceptions.ResourceNotFoundException;
 import com.example.forum.dto.Message.CreateMessageModel;
 import com.example.forum.dto.Message.EditMessageModel;
@@ -28,22 +31,30 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
 
+    private final UserRepository userRepository;
 
     @Override
-    public void createMessage(UUID topicId, CreateMessageModel createMessageModel) {
+    public void createMessage(UUID topicId,UUID authorId, CreateMessageModel createMessageModel) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException("Топика с таким id не существует: " + topicId));
+        User author = userRepository.findById(authorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
 
         Message message = new Message();
         message.setContent(createMessageModel.getContent());
         message.setTopic(topic);
+        message.setAuthor(author);
         messageRepository.save(message);
     }
 
     @Override
-    public void editMessage(UUID id, EditMessageModel editMessageModel) {
+    public void editMessage(UUID id, String email, EditMessageModel editMessageModel) {
         Message message = messageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Сообщения с таким id не существует: " + id));
+
+        if (!message.getAuthor().getEmail().equals(email)) {
+            throw new AccessDeniedException();
+        }
 
         message.setContent(editMessageModel.getContent());
         messageRepository.save(message);
