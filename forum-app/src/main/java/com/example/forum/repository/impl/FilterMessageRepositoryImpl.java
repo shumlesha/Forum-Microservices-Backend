@@ -33,7 +33,7 @@ public class FilterMessageRepositoryImpl implements FilterMessageRepository {
         Optional.ofNullable(filter.startDate()).ifPresent(startDate -> builder.and(message.createTime.after(startDate)));
         Optional.ofNullable(filter.endDate()).ifPresent(endDate -> builder.and(message.createTime.before(endDate)));
         Optional.ofNullable(filter.topicId()).ifPresent(topicId -> builder.and(message.topic.id.eq(topicId)));
-
+        Optional.ofNullable(filter.authorLogin()).ifPresent(authorLogin -> builder.and(message.author.email.eq(authorLogin)));
         if (filter.categoryId() != null) {
             Set<UUID> subCategories = categoryService.getSubcategoryIds(filter.categoryId());
             subCategories.add(filter.categoryId());

@@ -8,5 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface MessageMapper {
     @Mapping(source = "topic.id", target = "topicId")
+    @Mapping(source = "author.email", target = "authorEmail")
     MessageDTO toDTO(Message message);
 }

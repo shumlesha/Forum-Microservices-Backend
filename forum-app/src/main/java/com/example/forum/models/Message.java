@@ -1,6 +1,7 @@
 package com.example.forum.models;
 
 
+import com.example.auth.models.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,6 +24,12 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
+
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User author;
+
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: gateway-app
+  cloud:
+    gateway:
+      routes:
+        - id: forum-route
+          uri: lb://FORUM-APP
+          predicates:
+            - Path=/forum/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/forum/(?<segment>.*), /$\{segment}
+
+        - id: auth-route
+          uri: lb://AUTH-APP
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<segment>.*), /$\{segment}
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+jwt:
+  secret: ZnNnZ3Ned2d3Z2ZrZ2pyO2tyamdlcmttYmtlaWJlb3BibHJlYm1ycGU=
+  access: 3600000
+  refresh: 432000000
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    registerWithEureka: true
+    fetchRegistry: true
+
+server:
+  port: 8989

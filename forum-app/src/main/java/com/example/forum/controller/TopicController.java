@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,7 @@ public class TopicController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> editTopic(@PathVariable UUID id,
                                          @Validated @RequestBody EditTopicModel editTopicModel) {
         topicService.editTopic(id, editTopicModel);
@@ -44,6 +46,7 @@ public class TopicController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> deleteTopic(@PathVariable UUID id) {
         topicService.deleteTopic(id);
         return ResponseEntity.ok().build();
