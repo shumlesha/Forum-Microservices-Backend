@@ -1,7 +1,9 @@
 package com.example.auth.dto;
 
+import com.example.auth.dto.validation.Age;
 import com.example.auth.dto.validation.OnCreate;
 import com.example.auth.dto.validation.OnUpdate;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -19,6 +21,7 @@ public class UserRegisterModel {
     private String fullName;
 
     @Past(message = "Дата рождения дожна быть прошедшей", groups = {OnCreate.class, OnUpdate.class})
+    @Age(groups = {OnCreate.class, OnUpdate.class})
     private LocalDateTime birthDate;
 
     @NotBlank(message = "Необходим email", groups = {OnCreate.class, OnUpdate.class})
