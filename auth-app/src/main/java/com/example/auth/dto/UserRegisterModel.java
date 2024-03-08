@@ -3,6 +3,7 @@ package com.example.auth.dto;
 import com.example.auth.dto.validation.Age;
 import com.example.auth.dto.validation.OnCreate;
 import com.example.auth.dto.validation.OnUpdate;
+import com.example.auth.dto.validation.Password;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
@@ -32,6 +33,7 @@ public class UserRegisterModel {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Необходим пароль", groups = {OnCreate.class, OnUpdate.class})
     @Length(min = 6, max = 32, message = "Длина пароля должна быть от 6 до 32 символов", groups = {OnCreate.class, OnUpdate.class})
+    @Password(groups = {OnCreate.class})
     private String password;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
