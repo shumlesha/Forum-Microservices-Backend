@@ -25,7 +25,8 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
                 new CharacterRule(EnglishCharacterData.UpperCase, 1),
                 new CharacterRule(EnglishCharacterData.LowerCase, 2),
                 new CharacterRule(EnglishCharacterData.Digit, 4),
-                new CharacterRule(EnglishCharacterData.Special, 1)
+                new CharacterRule(EnglishCharacterData.Special, 1),
+                new WhitespaceRule()
         ));
         RuleResult result = validator.validate(new PasswordData(password));
         if (result.isValid()) {
