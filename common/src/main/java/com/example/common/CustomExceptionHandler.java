@@ -4,6 +4,7 @@ import com.example.common.exceptions.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -79,6 +80,14 @@ public class CustomExceptionHandler {
         errorResponse.setErrors(errors);
         return errorResponse;
     }
+
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlePropertyReferenceException(PropertyReferenceException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
