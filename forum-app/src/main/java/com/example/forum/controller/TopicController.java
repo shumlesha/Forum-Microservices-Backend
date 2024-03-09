@@ -38,7 +38,6 @@ public class TopicController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> editTopic(@PathVariable UUID id,
                                          @Validated @RequestBody EditTopicModel editTopicModel) {
         topicService.editTopic(id, editTopicModel);
@@ -46,7 +45,6 @@ public class TopicController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> deleteTopic(@PathVariable UUID id) {
         topicService.deleteTopic(id);
         return ResponseEntity.ok().build();
