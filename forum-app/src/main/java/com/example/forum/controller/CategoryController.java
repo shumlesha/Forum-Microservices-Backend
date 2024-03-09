@@ -31,7 +31,6 @@ public class CategoryController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createCategory(@AuthenticationPrincipal JwtUser jwtUser, @Validated @RequestBody CreateCategoryModel createCategoryModel) {
         log.info("Создание категории с названием {}", createCategoryModel.getName());
         log.info("Пользователь с ролями: {}", jwtUser.getAuthorities());
@@ -40,7 +39,6 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> editCategory(@PathVariable UUID id, @Validated @RequestBody EditCategoryModel editCategoryModel) {
         log.info("Редактирование категории с id {}", id);
         categoryService.editCategory(id, editCategoryModel);
@@ -48,7 +46,6 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCategory(@PathVariable UUID id) {
         log.info("Удаление категории с id {}", id);
         categoryService.deleteCategory(id);
