@@ -17,6 +17,7 @@ public class CategoryDTO {
     private String name;
     private UUID parentId;
     private List<CategoryDTO> subcategories;
+    private String authorEmail;
     private LocalDateTime createTime;
     private LocalDateTime modifiedDate;
 }

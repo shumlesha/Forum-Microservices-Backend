@@ -31,10 +31,11 @@ public class CategoryController {
 
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@AuthenticationPrincipal JwtUser jwtUser, @Validated @RequestBody CreateCategoryModel createCategoryModel) {
+    public ResponseEntity<?> createCategory(@AuthenticationPrincipal JwtUser jwtUser,
+                                            @Validated @RequestBody CreateCategoryModel createCategoryModel) {
         log.info("Создание категории с названием {}", createCategoryModel.getName());
         log.info("Пользователь с ролями: {}", jwtUser.getAuthorities());
-        categoryService.createCategory(createCategoryModel);
+        categoryService.createCategory(jwtUser.getId(), createCategoryModel);
         return ResponseEntity.ok().build();
     }
 

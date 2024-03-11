@@ -1,5 +1,7 @@
 package com.example.forum.service.impl;
 
+import com.example.auth.models.User;
+import com.example.auth.repository.UserRepository;
 import com.example.common.exceptions.CategoryHasSubcategoriesException;
 import com.example.common.exceptions.ObjectAlreadyExistsException;
 import com.example.common.exceptions.ResourceNotFoundException;
@@ -26,8 +28,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final TopicRepository topicRepository;
 
+    private final UserRepository userRepository;
+
     @Override
-    public void createCategory(CreateCategoryModel createCategoryModel) {
+    public void createCategory(UUID authorId, CreateCategoryModel createCategoryModel) {
         if (categoryRepository.existsByName(createCategoryModel.getName())) {
             throw new ObjectAlreadyExistsException("Категория с таким названием уже существует");
         }
@@ -35,6 +39,9 @@ public class CategoryServiceImpl implements CategoryService {
         if (createCategoryModel.getParentId() != null && !categoryRepository.existsById(createCategoryModel.getParentId())) {
             throw new ResourceNotFoundException("Категории с таким id не существует: " + createCategoryModel.getParentId());
         }
+
+        User author = userRepository.findById(authorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
 
         Category category = new Category();
         category.setName(createCategoryModel.getName());
@@ -49,6 +56,8 @@ public class CategoryServiceImpl implements CategoryService {
 
             category.setParent(parent);
         }
+        category.setAuthor(author);
+
         categoryRepository.save(category);
     }
 

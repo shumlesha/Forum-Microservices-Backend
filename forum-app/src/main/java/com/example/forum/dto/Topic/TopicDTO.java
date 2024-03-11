@@ -17,6 +17,7 @@ public class TopicDTO {
     private UUID id;
     private String name;
     private UUID categoryId;
+    private String authorEmail;
     private List<MessageDTO> messages;
     private LocalDateTime createTime;
     private LocalDateTime modifiedDate;

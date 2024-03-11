@@ -1,5 +1,7 @@
 package com.example.forum.service.impl;
 
+import com.example.auth.models.User;
+import com.example.auth.repository.UserRepository;
 import com.example.common.exceptions.CategoryHasSubcategoriesException;
 import com.example.common.exceptions.ObjectAlreadyExistsException;
 import com.example.common.exceptions.ResourceNotFoundException;
@@ -24,9 +26,10 @@ public class TopicServiceImpl implements TopicService {
 
     private final CategoryRepository categoryRepository;
     private final TopicRepository topicRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public void createTopic(UUID categoryId, CreateTopicModel createTopicModel) {
+    public void createTopic(UUID authorId, UUID categoryId, CreateTopicModel createTopicModel) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Категории с таким id не найдено: " + categoryId));
         if (!category.getSubcategories().isEmpty()) {
@@ -37,9 +40,13 @@ public class TopicServiceImpl implements TopicService {
             throw new ObjectAlreadyExistsException("Топик с таким названием уже существует: " + createTopicModel.getName());
         }
 
+        User author = userRepository.findById(authorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
+
         Topic topic = new Topic();
         topic.setName(createTopicModel.getName());
         topic.setCategory(category);
+        topic.setAuthor(author);
 
         topicRepository.save(topic);
     }

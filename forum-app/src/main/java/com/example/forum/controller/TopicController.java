@@ -1,6 +1,7 @@
 package com.example.forum.controller;
 
 
+import com.example.auth.security.JwtUser;
 import com.example.forum.dto.Topic.CreateTopicModel;
 import com.example.forum.dto.Topic.EditTopicModel;
 import com.example.forum.dto.Topic.TopicDTO;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +34,9 @@ public class TopicController {
     private final TopicMapper topicMapper;
     @PostMapping("/{categoryId}")
     public ResponseEntity<?> createTopic(@PathVariable UUID categoryId,
-                                         @Validated @RequestBody CreateTopicModel createTopicModel) {
-        topicService.createTopic(categoryId, createTopicModel);
+                                         @Validated @RequestBody CreateTopicModel createTopicModel,
+                                         @AuthenticationPrincipal JwtUser jwtUser) {
+        topicService.createTopic(jwtUser.getId(), categoryId, createTopicModel);
         return ResponseEntity.ok().build();
     }
 

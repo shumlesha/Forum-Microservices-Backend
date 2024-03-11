@@ -10,5 +10,6 @@ import org.mapstruct.Mapping;
 public interface TopicMapper {
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(target = "messages", source = "messages")
+    @Mapping(source = "author.email", target = "authorEmail")
     TopicDTO toDTO(Topic topic);
 }

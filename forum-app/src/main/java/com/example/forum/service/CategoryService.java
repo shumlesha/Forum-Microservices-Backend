@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface CategoryService {
-    void createCategory(CreateCategoryModel createCategoryModel);
+    void createCategory(UUID authorId, CreateCategoryModel createCategoryModel);
 
     void editCategory(UUID id, EditCategoryModel editCategoryModel);
 
