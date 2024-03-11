@@ -1,5 +1,6 @@
 package com.example.forum.models;
 
+import com.example.auth.models.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,6 +28,10 @@ public class Category {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("name ASC")
     private List<Category> subcategories;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

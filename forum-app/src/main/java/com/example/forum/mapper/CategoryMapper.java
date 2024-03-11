@@ -14,6 +14,7 @@ public interface CategoryMapper {
 
     @Mapping(source = "parent.id", target = "parentId")
     @Mapping(target = "subcategories", source = "subcategories")
+    @Mapping(source = "author.email", target = "authorEmail")
     CategoryDTO toDTO(Category category);
 
     List<CategoryDTO> toDTOList(List<Category> categories);
