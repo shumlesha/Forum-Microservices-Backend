@@ -1,6 +1,6 @@
 package com.example.forum.models;
 
-import com.example.auth.models.User;
+import com.example.common.models.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;

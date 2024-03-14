@@ -1,7 +1,6 @@
 package com.example.forum.service.impl;
 
-import com.example.auth.models.User;
-import com.example.auth.repository.UserRepository;
+import com.example.common.models.User;
 import com.example.common.exceptions.CategoryHasSubcategoriesException;
 import com.example.common.exceptions.ObjectAlreadyExistsException;
 import com.example.common.exceptions.ResourceNotFoundException;
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +26,8 @@ public class TopicServiceImpl implements TopicService {
 
     private final CategoryRepository categoryRepository;
     private final TopicRepository topicRepository;
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     public void createTopic(UUID authorId, UUID categoryId, CreateTopicModel createTopicModel) {
@@ -40,8 +41,13 @@ public class TopicServiceImpl implements TopicService {
             throw new ObjectAlreadyExistsException("Топик с таким названием уже существует: " + createTopicModel.getName());
         }
 
-        User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
+        //User author = userRepository.findById(authorId)
+                //.orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
+        User author = webClientBuilder.build().get()
+                .uri("http://users-app/api/users/findById?id=" + authorId)
+                .retrieve()
+                .bodyToMono(User.class)
+                .block();
 
         Topic topic = new Topic();
         topic.setName(createTopicModel.getName());

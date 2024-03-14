@@ -1,4 +1,4 @@
-package com.example.auth.security;
+package com.example.securitylib;
 
 
 import lombok.Data;

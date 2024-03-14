@@ -1,9 +1,8 @@
 package com.example.auth.controller;
 
 
-import com.example.auth.dto.TokenResponse;
+import com.example.securitylib.dto.TokenResponse;
 import com.example.auth.service.AuthService;
-import com.example.auth.service.UserService;
 import com.example.auth.dto.UserLoginModel;
 import com.example.auth.dto.UserRegisterModel;
 import com.example.auth.dto.validation.OnCreate;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private final UserService userService;
     private final UserMapper userMapper;
     private final AuthService authService;
 

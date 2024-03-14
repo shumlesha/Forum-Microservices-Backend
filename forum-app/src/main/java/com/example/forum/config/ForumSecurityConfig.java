@@ -1,8 +1,7 @@
-package com.example.auth.security;
+package com.example.forum.config;
 
-
-import com.example.securitylib.service.TokenProvider;
 import com.example.securitylib.security.JwtTokenFilter;
+import com.example.securitylib.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,10 +23,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class ForumSecurityConfig {
+
 
     private final ApplicationContext applicationContext;
     private final TokenProvider tokenProvider;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -59,21 +61,11 @@ public class SecurityConfig {
                                 }))
                 )
                 .authorizeHttpRequests(configurer ->
-                        configurer.requestMatchers("/**","/api/accounts/login",
-                                        "/api/accounts/register",
-                                        "/api/accounts/refresh",
-                                        "api/users/findByEmail",
-
-                                        "/swagger-ui/**",
-                                        "/v3/api-docs/**").permitAll()
+                        configurer
                                 .anyRequest().authenticated()
                 )
-
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
-
-
-
 }

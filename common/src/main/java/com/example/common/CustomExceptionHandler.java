@@ -116,12 +116,12 @@ public class CustomExceptionHandler {
         log.error(e.getMessage(), e);
         return new ErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
-
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(Exception e) {
         log.error(e.getMessage(), e.getLocalizedMessage());
         log.error(String.valueOf(e));
+        log.error(Arrays.toString(e.getStackTrace()));
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal error");
     }
 

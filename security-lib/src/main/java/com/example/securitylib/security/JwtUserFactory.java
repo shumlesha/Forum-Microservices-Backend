@@ -1,8 +1,9 @@
-package com.example.auth.security;
+package com.example.securitylib.security;
 
 
-import com.example.auth.enums.Role;
-import com.example.auth.models.User;
+import com.example.common.enums.Role;
+import com.example.common.models.User;
+import com.example.securitylib.JwtUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

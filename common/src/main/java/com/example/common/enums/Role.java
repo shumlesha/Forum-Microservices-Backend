@@ -1,4 +1,4 @@
-package com.example.auth.enums;
+package com.example.common.enums;
 
 public enum Role {
     ROLE_USER,

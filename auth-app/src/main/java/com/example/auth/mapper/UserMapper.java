@@ -2,7 +2,7 @@ package com.example.auth.mapper;
 
 
 import com.example.auth.dto.UserRegisterModel;
-import com.example.auth.models.User;
+import com.example.common.models.User;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

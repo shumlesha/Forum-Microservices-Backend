@@ -1,7 +1,6 @@
 package com.example.forum.service.impl;
 
-import com.example.auth.models.User;
-import com.example.auth.repository.UserRepository;
+import com.example.common.models.User;
 import com.example.common.exceptions.CategoryHasSubcategoriesException;
 import com.example.common.exceptions.ObjectAlreadyExistsException;
 import com.example.common.exceptions.ResourceNotFoundException;
@@ -12,8 +11,8 @@ import com.example.forum.repository.CategoryRepository;
 import com.example.forum.repository.TopicRepository;
 import com.example.forum.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final TopicRepository topicRepository;
 
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     public void createCategory(UUID authorId, CreateCategoryModel createCategoryModel) {
@@ -40,8 +40,13 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ResourceNotFoundException("Категории с таким id не существует: " + createCategoryModel.getParentId());
         }
 
-        User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
+        //User author = userRepository.findById(authorId)
+                //.orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
+        User author = webClientBuilder.build().get()
+                .uri("http://users-app/api/users/findById?id=" + authorId)
+                .retrieve()
+                .bodyToMono(User.class)
+                .block();
 
         Category category = new Category();
         category.setName(createCategoryModel.getName());

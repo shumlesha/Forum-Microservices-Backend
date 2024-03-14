@@ -1,8 +1,9 @@
-package com.example.auth.service;
+package com.example.securitylib.service;
 
-import com.example.auth.dto.TokenResponse;
-import com.example.auth.enums.Role;
 
+import com.example.common.enums.Role;
+
+import com.example.securitylib.dto.TokenResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
