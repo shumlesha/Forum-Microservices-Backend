@@ -1,11 +1,11 @@
-package com.example.auth.service.impl;
+package com.example.securitylib.service.impl;
 
-import com.example.auth.dto.TokenResponse;
-import com.example.auth.enums.Role;
-import com.example.auth.models.User;
-import com.example.auth.props.JwtProperties;
-import com.example.auth.service.TokenProvider;
-import com.example.auth.service.UserService;
+
+import com.example.securitylib.dto.TokenResponse;
+import com.example.securitylib.props.JwtProperties;
+import com.example.securitylib.service.TokenProvider;
+import com.example.common.enums.Role;
+import com.example.common.models.User;
 import com.example.common.exceptions.AccessDeniedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.security.Key;
 import java.util.Date;
@@ -34,7 +35,8 @@ public class JwtTokenProvider implements TokenProvider {
 
     private final UserDetailsService userDetailsService;
 
-    private final UserService userService;
+    //private final UserService userService;
+    private final WebClient.Builder webClientBuilder;
     private Key key;
 
     @PostConstruct
@@ -84,7 +86,12 @@ public class JwtTokenProvider implements TokenProvider {
         }
 
         UUID userId = UUID.fromString(getId(refreshToken));
-        User user = userService.getById(userId);
+        //User user = userService.getById(userId);
+        User user = webClientBuilder.build().get()
+                .uri("http://users-app/api/users/findById?id=" + userId)
+                .retrieve()
+                .bodyToMono(User.class)
+                .block();
         tokenResponse.setId(userId);
         tokenResponse.setEmail(user.getEmail());
         tokenResponse.setAccessToken(createAccessToken(userId, user.getEmail(), user.getRoles()));

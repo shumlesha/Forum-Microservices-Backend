@@ -1,7 +1,7 @@
-package com.example.auth.security;
+package com.example.securitylib.security;
 
-import com.example.auth.service.TokenProvider;
 import com.example.common.exceptions.ResourceNotFoundException;
+import com.example.securitylib.service.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;

@@ -1,6 +1,6 @@
-package com.example.auth.models;
+package com.example.common.models;
 
-import com.example.auth.enums.Role;
+import com.example.common.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 

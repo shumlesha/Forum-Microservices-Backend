@@ -1,17 +1,16 @@
 package com.example.forum.controller;
 
 
-import com.example.auth.security.JwtUser;
+
 import com.example.forum.dto.Category.CategoryDTO;
 import com.example.forum.dto.Category.CreateCategoryModel;
 import com.example.forum.dto.Category.EditCategoryModel;
 import com.example.forum.mapper.CategoryMapper;
-import com.example.forum.models.Category;
 import com.example.forum.service.CategoryService;
+import com.example.securitylib.JwtUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

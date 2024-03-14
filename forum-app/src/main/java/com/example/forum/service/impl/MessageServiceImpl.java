@@ -1,7 +1,6 @@
 package com.example.forum.service.impl;
 
-import com.example.auth.models.User;
-import com.example.auth.repository.UserRepository;
+import com.example.common.models.User;
 import com.example.common.exceptions.AccessDeniedException;
 import com.example.common.exceptions.ResourceNotFoundException;
 import com.example.forum.dto.Message.CreateMessageModel;
@@ -18,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,14 +31,20 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
 
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     public void createMessage(UUID topicId,UUID authorId, CreateMessageModel createMessageModel) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException("Топика с таким id не существует: " + topicId));
-        User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
+        //User author = userRepository.findById(authorId)
+                //.orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
+        User author = webClientBuilder.build().get()
+                .uri("http://users-app/api/users/findById?id=" + authorId)
+                .retrieve()
+                .bodyToMono(User.class)
+                .block();
 
         Message message = new Message();
         message.setContent(createMessageModel.getContent());

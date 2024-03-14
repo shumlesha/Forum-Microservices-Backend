@@ -1,21 +1,18 @@
 package com.example.forum.controller;
 
-import com.example.auth.security.JwtUser;
+
 import com.example.forum.dto.Message.CreateMessageModel;
 import com.example.forum.dto.Message.EditMessageModel;
 import com.example.forum.dto.Message.MessageDTO;
 import com.example.forum.dto.Message.MessageFilter;
 import com.example.forum.mapper.MessageMapper;
-import com.example.forum.models.Category;
-import com.example.forum.models.Message;
-import com.example.forum.models.Topic;
 import com.example.forum.service.MessageService;
+import com.example.securitylib.JwtUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.support.PageableUtils;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
