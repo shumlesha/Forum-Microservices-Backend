@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface TopicService {
 
-    void createTopic(UUID authorId, UUID categoryId, CreateTopicModel createTopicModel);
+    Topic createTopic(UUID authorId, UUID categoryId, CreateTopicModel createTopicModel);
 
     void editTopic(UUID id, EditTopicModel editTopicModel);
 

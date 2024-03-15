@@ -32,7 +32,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Transactional
-    public void createTopic(UUID authorId, UUID categoryId, CreateTopicModel createTopicModel) {
+    public Topic createTopic(UUID authorId, UUID categoryId, CreateTopicModel createTopicModel) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Категории с таким id не найдено: " + categoryId));
         if (!category.getSubcategories().isEmpty()) {
@@ -56,7 +56,7 @@ public class TopicServiceImpl implements TopicService {
         topic.setCategory(category);
         topic.setAuthor(author);
 
-        topicRepository.save(topic);
+        return topicRepository.save(topic);
     }
 
     @Override

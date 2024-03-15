@@ -6,6 +6,7 @@ import com.example.forum.dto.Message.EditMessageModel;
 import com.example.forum.dto.Message.MessageDTO;
 import com.example.forum.dto.Message.MessageFilter;
 import com.example.forum.mapper.MessageMapper;
+import com.example.forum.models.Message;
 import com.example.forum.service.MessageService;
 import com.example.securitylib.JwtUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,11 +38,11 @@ public class MessageController {
 
     @Operation(summary = "Create message in concrete topic")
     @PostMapping("/{topicId}")
-    public ResponseEntity<?> createMessage(@PathVariable UUID topicId,
+    public ResponseEntity<MessageDTO> createMessage(@PathVariable UUID topicId,
                                            @Validated @RequestBody CreateMessageModel createMessageModel,
                                            @AuthenticationPrincipal JwtUser jwtUser) {
-        messageService.createMessage(topicId, jwtUser.getId(), createMessageModel);
-        return ResponseEntity.ok().build();
+        Message createdMessage = messageService.createMessage(topicId, jwtUser.getId(), createMessageModel);
+        return ResponseEntity.ok(messageMapper.toDTO(createdMessage));
     }
 
     @Operation(summary = "Edit message by its id")
