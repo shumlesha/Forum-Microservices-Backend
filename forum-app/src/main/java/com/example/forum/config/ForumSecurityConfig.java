@@ -2,7 +2,13 @@ package com.example.forum.config;
 
 import com.example.securitylib.security.JwtTokenFilter;
 import com.example.securitylib.service.TokenProvider;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +50,6 @@ public class ForumSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(login -> login.usernameParameter("email"))
                 .sessionManagement(sessionManagement ->
@@ -61,11 +66,25 @@ public class ForumSecurityConfig {
                                 }))
                 )
                 .authorizeHttpRequests(configurer ->
-                        configurer
+                        configurer.requestMatchers(
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
+    }
+
+    @Bean
+    public OpenAPI customOpenAPI(@Value("${gateway.host}") String gatewayHost) {
+        return new OpenAPI()
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(
+                        new Components()
+                                .addSecuritySchemes("bearerAuth", new SecurityScheme().type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer").bearerFormat("JWT"))
+                )
+                .addServersItem(new Server().url(gatewayHost + "/forum"));
     }
 }

@@ -12,6 +12,7 @@ import com.example.forum.repository.TopicRepository;
 import com.example.forum.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashSet;
@@ -31,6 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final WebClient.Builder webClientBuilder;
 
     @Override
+    @Transactional
     public void createCategory(UUID authorId, CreateCategoryModel createCategoryModel) {
         if (categoryRepository.existsByName(createCategoryModel.getName())) {
             throw new ObjectAlreadyExistsException("Категория с таким названием уже существует");
@@ -67,6 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void editCategory(UUID id, EditCategoryModel editCategoryModel) {
         if (categoryRepository.existsByName(editCategoryModel.getName())) {
             throw new ObjectAlreadyExistsException("Категория с таким названием уже существует");
@@ -80,6 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Категории с таким id не существует: " + id));

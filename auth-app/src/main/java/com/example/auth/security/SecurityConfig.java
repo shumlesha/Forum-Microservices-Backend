@@ -3,7 +3,10 @@ package com.example.auth.security;
 
 import com.example.securitylib.service.TokenProvider;
 import com.example.securitylib.security.JwtTokenFilter;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +45,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(login -> login.usernameParameter("email"))
                 .sessionManagement(sessionManagement ->
@@ -74,6 +76,10 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-
+    @Bean
+    public OpenAPI customOpenAPI(@Value("${gateway.host}") String gatewayHost) {
+        return new OpenAPI()
+                .addServersItem(new Server().url(gatewayHost + "/auth"));
+    }
 
 }

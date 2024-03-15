@@ -9,13 +9,15 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses={TopicMapper.class})
 public interface CategoryMapper {
 
     @Mapping(source = "parent.id", target = "parentId")
     @Mapping(target = "subcategories", source = "subcategories")
+    @Mapping(target = "topics", source = "topics")
     @Mapping(source = "author.email", target = "authorEmail")
     CategoryDTO toDTO(Category category);
 
     List<CategoryDTO> toDTOList(List<Category> categories);
+
 }

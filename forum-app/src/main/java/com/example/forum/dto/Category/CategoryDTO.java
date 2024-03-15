@@ -1,5 +1,6 @@
 package com.example.forum.dto.Category;
 
+import com.example.forum.dto.Topic.TopicDTO;
 import com.example.forum.models.Category;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class CategoryDTO {
     private String name;
     private UUID parentId;
     private List<CategoryDTO> subcategories;
+    private List<TopicDTO> topics;
     private String authorEmail;
     private LocalDateTime createTime;
     private LocalDateTime modifiedDate;
