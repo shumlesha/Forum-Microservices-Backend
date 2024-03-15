@@ -23,7 +23,7 @@
 
 # Configuration/Installation
 
-Необходимо запустить в сервисы в следующем порядке:
+Необходимо запустить сервисы в следующем порядке:
 1. Eureka Registry
 2. ForumServer
 3. AuthServer
