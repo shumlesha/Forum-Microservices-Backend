@@ -8,6 +8,8 @@ import com.example.forum.dto.Message.MessageFilter;
 import com.example.forum.mapper.MessageMapper;
 import com.example.forum.service.MessageService;
 import com.example.securitylib.JwtUser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,10 +30,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/messages")
 @RequiredArgsConstructor
+@Tag(name = "Message")
 public class MessageController {
     private final MessageService messageService;
     private final MessageMapper messageMapper;
 
+    @Operation(summary = "Create message in concrete topic")
     @PostMapping("/{topicId}")
     public ResponseEntity<?> createMessage(@PathVariable UUID topicId,
                                            @Validated @RequestBody CreateMessageModel createMessageModel,
@@ -40,6 +44,7 @@ public class MessageController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Edit message by its id")
     @PutMapping("/{id}")
     public ResponseEntity<?> editMessage(@PathVariable UUID id,
                                          @Validated @RequestBody EditMessageModel editMessageModel,
@@ -48,13 +53,14 @@ public class MessageController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Delete message by its id")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> deleteMessage(@PathVariable UUID id) {
         messageService.deleteMessage(id);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Get messages with pagination by topicId")
     @GetMapping("/{topicId}")
     public ResponseEntity<Page<MessageDTO>> getMessages(@PathVariable UUID topicId,
                                                      @PageableDefault(sort = "createTime",
@@ -62,13 +68,14 @@ public class MessageController {
         return ResponseEntity.ok(messageService.getMessages(topicId, pageable).map(messageMapper::toDTO));
     }
 
-
+    @Operation(summary = "Get messages by content-text")
     @GetMapping("/search")
     public ResponseEntity<List<MessageDTO>> getMessagesByContent(@RequestParam String content) {
         return ResponseEntity.ok(messageService.getMessagesByContent(content)
                 .stream().map(messageMapper::toDTO).collect(Collectors.toList()));
     }
 
+    @Operation(summary = "Get messages by some filter-params")
     @GetMapping("/filter")
     public ResponseEntity<List<MessageDTO>> searchMessages(@ModelAttribute MessageFilter messageFilter) {
         return ResponseEntity.ok(messageService.searchMessages(messageFilter)

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class MessageServiceImpl implements MessageService {
     private final WebClient.Builder webClientBuilder;
 
     @Override
+    @Transactional
     public void createMessage(UUID topicId,UUID authorId, CreateMessageModel createMessageModel) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException("Топика с таким id не существует: " + topicId));
@@ -54,6 +56,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    @Transactional
     public void editMessage(UUID id, String email, EditMessageModel editMessageModel) {
         Message message = messageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Сообщения с таким id не существует: " + id));
@@ -68,6 +71,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    @Transactional
     public void deleteMessage(UUID id) {
         Message message = messageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Сообщения с таким id не существует: " + id));

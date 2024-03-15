@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class TopicServiceImpl implements TopicService {
     private final WebClient.Builder webClientBuilder;
 
     @Override
+    @Transactional
     public void createTopic(UUID authorId, UUID categoryId, CreateTopicModel createTopicModel) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Категории с таким id не найдено: " + categoryId));
@@ -58,6 +60,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    @Transactional
     public void editTopic(UUID id, EditTopicModel editTopicModel) {
         if (topicRepository.existsByName(editTopicModel.getName())) {
             throw new ObjectAlreadyExistsException("Топик с таким названием уже существует: " + editTopicModel.getName());
@@ -71,6 +74,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    @Transactional
     public void deleteTopic(UUID id) {
         Topic topic = topicRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Топика с таким id не существует: " + id));

@@ -8,6 +8,8 @@ import com.example.forum.dto.Category.EditCategoryModel;
 import com.example.forum.mapper.CategoryMapper;
 import com.example.forum.service.CategoryService;
 import com.example.securitylib.JwtUser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +25,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
+@CrossOrigin(origins="http://localhost:8989", allowCredentials = "true")
+@Tag(name = "Category")
 public class CategoryController {
 
     private final CategoryService categoryService;
     private final CategoryMapper categoryMapper;
 
 
+    @Operation(summary = "Create category")
     @PostMapping
     public ResponseEntity<?> createCategory(@AuthenticationPrincipal JwtUser jwtUser,
                                             @Validated @RequestBody CreateCategoryModel createCategoryModel) {
@@ -38,6 +43,7 @@ public class CategoryController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Update category")
     @PutMapping("/{id}")
     public ResponseEntity<?> editCategory(@PathVariable UUID id, @Validated @RequestBody EditCategoryModel editCategoryModel) {
         log.info("Редактирование категории с id {}", id);
@@ -45,6 +51,7 @@ public class CategoryController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Delete category")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable UUID id) {
         log.info("Удаление категории с id {}", id);
@@ -52,6 +59,7 @@ public class CategoryController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Get all categories (hierarchy)")
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         log.info("Получаем список категорий");
@@ -59,6 +67,7 @@ public class CategoryController {
                 .map(categoryMapper::toDTO).collect(Collectors.toList()));
     }
 
+    @Operation(summary = "Get (search) categories by name")
     @GetMapping("/search")
     public ResponseEntity<List<CategoryDTO>> getCategoriesByName(@RequestParam String name) {
         log.info("Получаем список категорий по названию {}", name);

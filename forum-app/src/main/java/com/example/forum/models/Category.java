@@ -29,6 +29,10 @@ public class Category {
     @OrderBy("name ASC")
     private List<Category> subcategories;
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("name ASC")
+    private List<Topic> topics;
+
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
