@@ -5,6 +5,7 @@ import com.example.forum.dto.Topic.CreateTopicModel;
 import com.example.forum.dto.Topic.EditTopicModel;
 import com.example.forum.dto.Topic.TopicDTO;
 import com.example.forum.mapper.TopicMapper;
+import com.example.forum.models.Topic;
 import com.example.forum.service.TopicService;
 import com.example.securitylib.JwtUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,11 +36,11 @@ public class TopicController {
 
     @Operation(summary = "Create topic in concrete category by id")
     @PostMapping("/{categoryId}")
-    public ResponseEntity<?> createTopic(@PathVariable UUID categoryId,
+    public ResponseEntity<TopicDTO> createTopic(@PathVariable UUID categoryId,
                                          @Validated @RequestBody CreateTopicModel createTopicModel,
                                          @AuthenticationPrincipal JwtUser jwtUser) {
-        topicService.createTopic(jwtUser.getId(), categoryId, createTopicModel);
-        return ResponseEntity.ok().build();
+        Topic createdTopic = topicService.createTopic(jwtUser.getId(), categoryId, createTopicModel);
+        return ResponseEntity.ok(topicMapper.toDTO(createdTopic));
     }
 
     @Operation(summary = "Edit topic by its id")

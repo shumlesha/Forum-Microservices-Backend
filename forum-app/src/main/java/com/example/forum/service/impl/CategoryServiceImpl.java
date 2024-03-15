@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void createCategory(UUID authorId, CreateCategoryModel createCategoryModel) {
+    public Category createCategory(UUID authorId, CreateCategoryModel createCategoryModel) {
         if (categoryRepository.existsByName(createCategoryModel.getName())) {
             throw new ObjectAlreadyExistsException("Категория с таким названием уже существует");
         }
@@ -65,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         category.setAuthor(author);
 
-        categoryRepository.save(category);
+        return categoryRepository.save(category);
     }
 
     @Override

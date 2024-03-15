@@ -6,6 +6,7 @@ import com.example.forum.dto.Category.CategoryDTO;
 import com.example.forum.dto.Category.CreateCategoryModel;
 import com.example.forum.dto.Category.EditCategoryModel;
 import com.example.forum.mapper.CategoryMapper;
+import com.example.forum.models.Category;
 import com.example.forum.service.CategoryService;
 import com.example.securitylib.JwtUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,12 +36,13 @@ public class CategoryController {
 
     @Operation(summary = "Create category")
     @PostMapping
-    public ResponseEntity<?> createCategory(@AuthenticationPrincipal JwtUser jwtUser,
+    public ResponseEntity<CategoryDTO> createCategory(@AuthenticationPrincipal JwtUser jwtUser,
                                             @Validated @RequestBody CreateCategoryModel createCategoryModel) {
         log.info("Создание категории с названием {}", createCategoryModel.getName());
         log.info("Пользователь с ролями: {}", jwtUser.getAuthorities());
-        categoryService.createCategory(jwtUser.getId(), createCategoryModel);
-        return ResponseEntity.ok().build();
+        Category createdCategory = categoryService.createCategory(jwtUser.getId(), createCategoryModel);
+
+        return ResponseEntity.ok(categoryMapper.toDTO(createdCategory));
     }
 
     @Operation(summary = "Update category")

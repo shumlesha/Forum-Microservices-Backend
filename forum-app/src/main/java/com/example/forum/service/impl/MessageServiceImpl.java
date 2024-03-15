@@ -37,7 +37,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
-    public void createMessage(UUID topicId,UUID authorId, CreateMessageModel createMessageModel) {
+    public Message createMessage(UUID topicId,UUID authorId, CreateMessageModel createMessageModel) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException("Топика с таким id не существует: " + topicId));
         //User author = userRepository.findById(authorId)
@@ -52,7 +52,7 @@ public class MessageServiceImpl implements MessageService {
         message.setContent(createMessageModel.getContent());
         message.setTopic(topic);
         message.setAuthor(author);
-        messageRepository.save(message);
+        return messageRepository.save(message);
     }
 
     @Override
