@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: gateway-app
   cloud:
@@ -23,14 +25,14 @@ spring:
           enabled: true
           lower-case-service-id: true
 jwt:
-  secret: ZnNnZ3Ned2d3Z2ZrZ2pyO2tyamdlcmttYmtlaWJlb3BibHJlYm1ycGU=
-  access: 3600000
-  refresh: 432000000
+  secret: ${JWT_SECRET}
+  access: ${JWT_ACCESS}
+  refresh: ${JWT_REFRESH}
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${HOST}:8761/eureka/
     registerWithEureka: true
     fetchRegistry: true
 
