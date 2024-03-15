@@ -51,6 +51,8 @@
 Для проекта настроен Swagger:
 http://localhost:8989/webjars/swagger-ui/index.html
 
+Для переключения между сервисами необходимо выбрать опцию в поле "Select a definition"
+
 (Эндпоинты с пагинацией имеют поле sort, которое может принимать поле и вид сортировки в таком виде):
 sort: [
 "createTime,desc"
