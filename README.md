@@ -41,10 +41,10 @@
 - POSTGRES_USERNAME: имя пользователя для подключения к БД Postgres
 - POSTGRES_PASSWORD: пароль для подключения к БД Postgres
 - POSTGRES_DATABASE: имя базы данных, используемой в приложении
-- JWT_SECRET: секретный ключ для подписи JWT (можно сгнерировать на https://www.base64encode.net/)
+- JWT_SECRET: секретный ключ для подписи JWT (можно сгенерировать на https://www.base64encode.net/)
 - JWT_ACCESS: время жизни access-токена в миллисекундах
 - JWT_ACCESS: время жизни refresh-токена в миллисекундах
-- API_SECRET: межсервисный API-ключ (также можно сгнерировать на https://www.base64encode.net/)
+- API_SECRET: межсервисный API-ключ (также можно сгенерировать на https://www.base64encode.net/)
 
 # API Documentation
 
