@@ -47,6 +47,7 @@ public class MessageController {
 
     @Operation(summary = "Edit message by its id")
     @PutMapping("/{id}")
+    @PreAuthorize("@acsi.isMessageOwner(#jwtUser.id, #id)")
     public ResponseEntity<?> editMessage(@PathVariable UUID id,
                                          @Validated @RequestBody EditMessageModel editMessageModel,
                                          @AuthenticationPrincipal JwtUser jwtUser) {
@@ -56,7 +57,9 @@ public class MessageController {
 
     @Operation(summary = "Delete message by its id")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMessage(@PathVariable UUID id) {
+    @PreAuthorize("@acsi.canModerateMessage(#jwtUser.id, #id)")
+    public ResponseEntity<?> deleteMessage(@PathVariable UUID id,
+                                           @AuthenticationPrincipal JwtUser jwtUser) {
         messageService.deleteMessage(id);
         return ResponseEntity.ok().build();
     }

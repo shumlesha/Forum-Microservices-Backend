@@ -90,4 +90,10 @@ public class TopicServiceImpl implements TopicService {
     public List<Topic> getTopicsByName(String name) {
         return topicRepository.findByNameContainingIgnoreCase(name);
     }
+
+    @Override
+    public Topic getById(UUID topicId) {
+        return topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Топика с таким id не существует: " + topicId));
+    }
 }

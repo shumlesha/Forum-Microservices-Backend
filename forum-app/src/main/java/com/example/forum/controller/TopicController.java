@@ -6,6 +6,7 @@ import com.example.forum.dto.Topic.EditTopicModel;
 import com.example.forum.dto.Topic.TopicDTO;
 import com.example.forum.mapper.TopicMapper;
 import com.example.forum.models.Topic;
+import com.example.forum.service.AccessControlService;
 import com.example.forum.service.TopicService;
 import com.example.securitylib.JwtUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 public class TopicController {
     private final TopicService topicService;
     private final TopicMapper topicMapper;
+    private final AccessControlService accessControlService;
 
     @Operation(summary = "Create topic in concrete category by id")
     @PostMapping("/{categoryId}")
@@ -45,15 +48,19 @@ public class TopicController {
 
     @Operation(summary = "Edit topic by its id")
     @PutMapping("/{id}")
+    @PreAuthorize("@acsi.isTopicOwner(#jwtUser.id, #id)")
     public ResponseEntity<?> editTopic(@PathVariable UUID id,
-                                         @Validated @RequestBody EditTopicModel editTopicModel) {
+                                       @Validated @RequestBody EditTopicModel editTopicModel,
+                                       @AuthenticationPrincipal JwtUser jwtUser) {
         topicService.editTopic(id, editTopicModel);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Delete topic by its id")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTopic(@PathVariable UUID id) {
+    @PreAuthorize("@acsi.canModerateTopic(#jwtUser.id, #id)")
+    public ResponseEntity<?> deleteTopic(@PathVariable UUID id,
+                                         @AuthenticationPrincipal JwtUser jwtUser) {
         topicService.deleteTopic(id);
         return ResponseEntity.ok().build();
     }

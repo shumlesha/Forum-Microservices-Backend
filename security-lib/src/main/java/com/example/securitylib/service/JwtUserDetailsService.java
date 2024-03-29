@@ -1,6 +1,7 @@
 package com.example.securitylib.service;
 
 import com.example.common.WebClientErrorResponse;
+import com.example.common.exceptions.WebClientCustomException;
 import com.example.common.models.User;
 import com.example.securitylib.security.JwtUserFactory;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,7 @@ public class JwtUserDetailsService implements UserDetailsService {
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
-                        log.info(String.valueOf(errorBody.getErrors()));
-                        return Mono.error(new RuntimeException(errorBody.getMessage()));
+                        return Mono.error(new WebClientCustomException(errorBody));
                     });
                 })
                 .bodyToMono(User.class)

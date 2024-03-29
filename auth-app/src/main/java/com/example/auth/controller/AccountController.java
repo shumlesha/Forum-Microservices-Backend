@@ -1,22 +1,21 @@
 package com.example.auth.controller;
 
 
+import com.example.auth.dto.RegisterResponse;
 import com.example.securitylib.dto.TokenResponse;
 import com.example.auth.service.AuthService;
 import com.example.auth.dto.UserLoginModel;
 import com.example.auth.dto.UserRegisterModel;
 import com.example.auth.dto.validation.OnCreate;
 import com.example.auth.mapper.UserMapper;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -30,9 +29,9 @@ public class AccountController {
 
     @Operation(summary = "Register new user-account")
     @PostMapping("/register")
-    public ResponseEntity<TokenResponse> registerUser(@Validated(OnCreate.class) @RequestBody UserRegisterModel userRegisterModel) {
-        TokenResponse tokenResponse = authService.register(userMapper.toEntity(userRegisterModel));
-        return ResponseEntity.ok(tokenResponse);
+    public ResponseEntity<RegisterResponse> registerUser(@Validated(OnCreate.class) @RequestBody UserRegisterModel userRegisterModel) {
+        RegisterResponse registerResponse = authService.register(userMapper.toEntity(userRegisterModel));
+        return ResponseEntity.ok(registerResponse);
     }
 
     @Operation(summary = "Login into your account")
@@ -46,6 +45,12 @@ public class AccountController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) {
         return ResponseEntity.ok(authService.refreshToken(refreshToken));
+    }
+
+    @Hidden
+    @GetMapping("/confirm")
+    public ResponseEntity<TokenResponse> confirmUser(@RequestParam String token) {
+        return ResponseEntity.ok(authService.confirmUser(token));
     }
 
 }

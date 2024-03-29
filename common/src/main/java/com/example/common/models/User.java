@@ -37,4 +37,7 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private Set<Role> roles;
 
+    @Column(nullable = false)
+    private boolean confirmed = false;
+
 }

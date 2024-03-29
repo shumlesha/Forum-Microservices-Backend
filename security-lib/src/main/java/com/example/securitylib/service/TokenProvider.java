@@ -17,4 +17,13 @@ public interface TokenProvider {
     TokenResponse refreshUserTokens(String refreshToken);
     boolean validateToken(String token);
     Authentication getAuthentication(String token);
+    String createEmailToken(UUID userId, String email);
+
+    String getId(String token);
+
+    boolean checkUserConfirmation(String token);
+
+    boolean validateEmailToken(String token);
+
+    void dropEmailToken(String token);
 }
