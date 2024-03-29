@@ -2,6 +2,7 @@ package com.example.users.controller;
 
 
 import com.example.common.models.User;
+import com.example.securitylib.dto.VerificationTokenDTO;
 import com.example.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class UserController {
 
 
     @GetMapping("/findById")
-    public User findById(@RequestParam UUID id) {
+    public Mono<User> findById(@RequestParam UUID id) {
         log.info("Ищем по id");
         return userService.getById(id);
     }

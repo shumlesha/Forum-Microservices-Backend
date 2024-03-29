@@ -7,6 +7,7 @@ import com.example.forum.dto.Category.CreateCategoryModel;
 import com.example.forum.dto.Category.EditCategoryModel;
 import com.example.forum.mapper.CategoryMapper;
 import com.example.forum.models.Category;
+import com.example.forum.service.AccessControlService;
 import com.example.forum.service.CategoryService;
 import com.example.securitylib.JwtUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +35,9 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final CategoryMapper categoryMapper;
 
-
     @Operation(summary = "Create category")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryDTO> createCategory(@AuthenticationPrincipal JwtUser jwtUser,
                                             @Validated @RequestBody CreateCategoryModel createCategoryModel) {
         log.info("Создание категории с названием {}", createCategoryModel.getName());
@@ -47,6 +49,7 @@ public class CategoryController {
 
     @Operation(summary = "Update category")
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> editCategory(@PathVariable UUID id, @Validated @RequestBody EditCategoryModel editCategoryModel) {
         log.info("Редактирование категории с id {}", id);
         categoryService.editCategory(id, editCategoryModel);
@@ -55,6 +58,7 @@ public class CategoryController {
 
     @Operation(summary = "Delete category")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCategory(@PathVariable UUID id) {
         log.info("Удаление категории с id {}", id);
         categoryService.deleteCategory(id);

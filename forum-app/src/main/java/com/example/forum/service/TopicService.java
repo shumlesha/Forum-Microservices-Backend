@@ -20,4 +20,6 @@ public interface TopicService {
     Page<Topic> getAllTopics(Pageable pageable);
 
     List<Topic> getTopicsByName(String name);
+
+    Topic getById(UUID topicId);
 }

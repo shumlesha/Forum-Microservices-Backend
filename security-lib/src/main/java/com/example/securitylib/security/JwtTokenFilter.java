@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,12 +26,29 @@ public class JwtTokenFilter extends GenericFilterBean {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             bearerToken = bearerToken.substring(7);
         }
+        if (bearerToken != null && jwtTokenProvider.validateEmailToken(bearerToken)) {
+            HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+            httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            httpResponse.setContentType("application/json");
+            httpResponse.setCharacterEncoding("UTF-8");
+            httpResponse.getWriter().write("{ \"message\": \"Не пытайтесь авторизоваться по email-токену\" }");
+            return;
+        }
         if (bearerToken != null && jwtTokenProvider.validateToken(bearerToken)) {
             try {
                 Authentication authentication = jwtTokenProvider.getAuthentication(bearerToken);
 
                 if (authentication != null) {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    if (!jwtTokenProvider.checkUserConfirmation(bearerToken)) {
+                        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+                        httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        httpResponse.setContentType("application/json");
+                        httpResponse.setCharacterEncoding("UTF-8");
+                        httpResponse.getWriter().write("{ \"message\": \"Подтвердите свой аккаунт через email\" }");
+                        return;
+                    }
                 }
             }
             catch (ResourceNotFoundException ignored) {
@@ -41,3 +59,4 @@ public class JwtTokenFilter extends GenericFilterBean {
 
     }
 }
+

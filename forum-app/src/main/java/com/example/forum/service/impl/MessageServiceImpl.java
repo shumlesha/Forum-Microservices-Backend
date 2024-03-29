@@ -61,9 +61,6 @@ public class MessageServiceImpl implements MessageService {
         Message message = messageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Сообщения с таким id не существует: " + id));
 
-        if (!message.getAuthor().getEmail().equals(email)) {
-            throw new AccessDeniedException();
-        }
 
         message.setContent(editMessageModel.getContent());
         messageRepository.save(message);
@@ -93,5 +90,11 @@ public class MessageServiceImpl implements MessageService {
     public List<Message> searchMessages(MessageFilter messageFilter) {
         log.info("Поиск сообщений начат");
         return messageRepository.findByFilter(messageFilter);
+    }
+
+    @Override
+    public Message getById(UUID messageId) {
+        return messageRepository.findById(messageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Сообщения с таким id не существует: " + messageId));
     }
 }

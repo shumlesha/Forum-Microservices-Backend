@@ -22,4 +22,6 @@ public interface MessageService {
     List<Message> getMessagesByContent(String content);
 
     List<Message> searchMessages(MessageFilter messageFilter);
+
+    Message getById(UUID messageId);
 }

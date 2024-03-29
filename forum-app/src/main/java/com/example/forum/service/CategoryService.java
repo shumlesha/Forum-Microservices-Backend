@@ -20,4 +20,6 @@ public interface CategoryService {
     List<Category> getCategoriesByName(String name);
 
     Set<UUID> getSubcategoryIds(UUID categoryId);
+
+    Category getById(UUID categoryId);
 }

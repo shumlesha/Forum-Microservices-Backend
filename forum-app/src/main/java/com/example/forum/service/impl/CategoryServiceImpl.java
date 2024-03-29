@@ -117,4 +117,10 @@ public class CategoryServiceImpl implements CategoryService {
         }
         return subcategoryIds;
     }
+
+    @Override
+    public Category getById(UUID categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(()  -> new ResourceNotFoundException("Нет категории с таким id: " + categoryId));
+    }
 }
