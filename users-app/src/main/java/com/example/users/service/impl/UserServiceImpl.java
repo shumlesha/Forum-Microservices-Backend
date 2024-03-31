@@ -1,6 +1,7 @@
 package com.example.users.service.impl;
 
-import com.example.common.models.User;
+import com.example.common.dto.UserDTO;
+import com.example.users.models.User;
 import com.example.users.repository.UserRepository;
 
 import com.example.common.exceptions.ResourceNotFoundException;
@@ -28,9 +29,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<User> getById(UUID userId) {
-        return Mono.justOrEmpty(userRepository.findById(userId))
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Пользователь с таким id не найден: " + userId)));
+    public User getById(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("Пользователь с таким id не найден: " + userId));
     }
 
     @Override

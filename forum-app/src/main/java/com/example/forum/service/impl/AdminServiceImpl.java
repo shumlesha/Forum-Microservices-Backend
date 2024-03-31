@@ -2,12 +2,12 @@ package com.example.forum.service.impl;
 
 
 import com.example.common.WebClientErrorResponse;
+import com.example.common.dto.UserDTO;
 import com.example.common.enums.Role;
-import com.example.common.exceptions.ObjectAlreadyExistsException;
 import com.example.common.exceptions.ResourceNotFoundException;
 import com.example.common.exceptions.UserIsAlreadyModerator;
 import com.example.common.exceptions.WebClientCustomException;
-import com.example.common.models.User;
+
 import com.example.forum.dto.Admin.AppointModeratorModel;
 import com.example.forum.dto.Admin.RemoveModeratorModel;
 import com.example.forum.models.Category;
@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;
@@ -40,7 +39,7 @@ public class AdminServiceImpl implements AdminService {
         Category category = categoryRepository.findById(appointModeratorModel.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Категории с таким id не существует: " + appointModeratorModel.getCategoryId()));
 
-        User user = webClientBuilder.build().get()
+        UserDTO user = webClientBuilder.build().get()
                 .uri("http://users-app/api/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
@@ -48,10 +47,10 @@ public class AdminServiceImpl implements AdminService {
                         return Mono.error(new WebClientCustomException(errorBody));
                     });
                 })
-                .bodyToMono(User.class)
+                .bodyToMono(UserDTO.class)
                 .block();
 
-        if (categoryModeratorRepository.existsByCategoryAndModerator(category, user)) {
+        if (categoryModeratorRepository.existsByCategoryAndModeratorId(category, user.getId())) {
             throw new UserIsAlreadyModerator("Пользователь уже модерирует эту категорию");
         }
 
@@ -62,10 +61,10 @@ public class AdminServiceImpl implements AdminService {
         for (UUID uuid : subCategories) {
             Category currentCategory = categoryRepository.findById(uuid).orElseThrow();
 
-            if (!categoryModeratorRepository.existsByCategoryAndModerator(currentCategory, user)) {
+            if (!categoryModeratorRepository.existsByCategoryAndModeratorId(currentCategory, user.getId())) {
                 CategoryModerator categoryModerator = new CategoryModerator();
                 categoryModerator.setCategory(currentCategory);
-                categoryModerator.setModerator(user);
+                categoryModerator.setModeratorId(user.getId());
                 categoryModeratorRepository.save(categoryModerator);
             }
         }
@@ -76,7 +75,7 @@ public class AdminServiceImpl implements AdminService {
                   .uri("http://users-app/api/users/saveUser")
                   .bodyValue(user)
                   .retrieve()
-                  .bodyToMono(User.class).block();
+                  .bodyToMono(UserDTO.class).block();
         }
         /*CategoryModerator categoryModerator = new CategoryModerator();
         categoryModerator.setCategory(category);
@@ -89,7 +88,7 @@ public class AdminServiceImpl implements AdminService {
         Category category = categoryRepository.findById(removeModeratorModel.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Категории с таким id не существует: " + removeModeratorModel.getCategoryId()));
 
-        User user = webClientBuilder.build().get()
+        UserDTO user = webClientBuilder.build().get()
                 .uri("http://users-app/api/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
@@ -97,10 +96,10 @@ public class AdminServiceImpl implements AdminService {
                         return Mono.error(new WebClientCustomException(errorBody));
                     });
                 })
-                .bodyToMono(User.class)
+                .bodyToMono(UserDTO.class)
                 .block();
 
-        if (!categoryModeratorRepository.existsByCategoryAndModerator(category, user)) {
+        if (!categoryModeratorRepository.existsByCategoryAndModeratorId(category, user.getId())) {
             throw new UserIsAlreadyModerator("Пользователь не модерирует эту категорию");
         }
 
@@ -109,16 +108,16 @@ public class AdminServiceImpl implements AdminService {
 
         for (UUID uuid : subCategories) {
             Category currentCategory = categoryRepository.findById(uuid).orElseThrow();
-            categoryModeratorRepository.deleteByCategoryAndModerator(currentCategory, user);
+            categoryModeratorRepository.deleteByCategoryAndModeratorId(currentCategory, user.getId());
         }
 
-        if (!categoryModeratorRepository.existsByModerator(user)) {
+        if (!categoryModeratorRepository.existsByModeratorId(user.getId())) {
             user.setRoles(Set.of(Role.ROLE_USER));
             webClientBuilder.build().post()
                  .uri("http://users-app/api/users/saveUser")
                  .bodyValue(user)
                  .retrieve()
-                 .bodyToMono(User.class).block();
+                 .bodyToMono(UserDTO.class).block();
         }
     }
 }

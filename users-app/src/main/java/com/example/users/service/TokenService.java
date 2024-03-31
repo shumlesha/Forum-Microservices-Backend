@@ -1,7 +1,7 @@
 package com.example.users.service;
 
-import com.example.securitylib.dto.VerificationTokenDTO;
-import com.example.common.models.VerificationToken;
+import com.example.common.dto.VerificationTokenDTO;
+import com.example.users.models.VerificationToken;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package com.example.securitylib.service.impl;
 
-import com.example.common.models.User;
+import com.example.common.dto.UserDTO;
 import com.example.securitylib.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -9,7 +9,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
-import java.util.Properties;
 
 
 @Service
@@ -20,7 +19,7 @@ public class EmailServiceImpl implements EmailService {
     private final MessageSource messageSource;
     private final JwtTokenProvider jwtTokenProvider;
     @Override
-    public void sendEmail(User user) {
+    public void sendEmail(UserDTO user) {
         String subject = messageSource.getMessage("email.registration.subject", null, Locale.getDefault());
         String bodyTemplate = messageSource.getMessage("email.registration.body", null, Locale.getDefault());
         String confirmationLink = "http://localhost:8989/auth/api/accounts/confirm?token="

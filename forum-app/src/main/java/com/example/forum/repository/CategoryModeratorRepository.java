@@ -1,6 +1,6 @@
 package com.example.forum.repository;
 
-import com.example.common.models.User;
+
 import com.example.forum.models.Category;
 import com.example.forum.models.CategoryModerator;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +10,9 @@ import java.util.UUID;
 
 @Repository
 public interface CategoryModeratorRepository extends JpaRepository<CategoryModerator, UUID> {
-    boolean existsByCategoryAndModerator(Category category, User user);
+    boolean existsByCategoryAndModeratorId(Category category, UUID moderatorId);
 
-    void deleteByCategoryAndModerator(Category category, User user);
+    void deleteByCategoryAndModeratorId(Category category, UUID moderatorId);
 
-    boolean existsByModerator(User user);
+    boolean existsByModeratorId(UUID moderatorId);
 }

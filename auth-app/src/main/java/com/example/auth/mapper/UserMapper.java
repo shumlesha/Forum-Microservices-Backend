@@ -2,14 +2,15 @@ package com.example.auth.mapper;
 
 
 import com.example.auth.dto.UserRegisterModel;
-import com.example.common.models.User;
+import com.example.common.dto.UserDTO;
+
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    UserRegisterModel toDto(User user);
+    UserRegisterModel toDto(UserDTO user);
 
-    User toEntity(UserRegisterModel dto);
+    UserDTO toEntity(UserRegisterModel dto);
 
 }

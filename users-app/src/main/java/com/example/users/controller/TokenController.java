@@ -1,7 +1,7 @@
 package com.example.users.controller;
 
-import com.example.securitylib.dto.VerificationTokenDTO;
-import com.example.common.models.VerificationToken;
+import com.example.common.dto.VerificationTokenDTO;
+import com.example.users.models.VerificationToken;
 import com.example.users.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +36,7 @@ public class TokenController {
 
     @GetMapping("/getToken")
     public Optional<VerificationToken> getToken(@RequestParam String email) {
+
         return tokenService.getToken(email);
     }
 }

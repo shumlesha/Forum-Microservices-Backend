@@ -1,6 +1,7 @@
 package com.example.forum.service.impl;
 
-import com.example.common.models.User;
+import com.example.common.dto.UserDTO;
+
 import com.example.common.exceptions.CategoryHasSubcategoriesException;
 import com.example.common.exceptions.ObjectAlreadyExistsException;
 import com.example.common.exceptions.ResourceNotFoundException;
@@ -44,10 +45,10 @@ public class CategoryServiceImpl implements CategoryService {
 
         //User author = userRepository.findById(authorId)
                 //.orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
-        User author = webClientBuilder.build().get()
+        UserDTO author = webClientBuilder.build().get()
                 .uri("http://users-app/api/users/findById?id=" + authorId)
                 .retrieve()
-                .bodyToMono(User.class)
+                .bodyToMono(UserDTO.class)
                 .block();
 
         Category category = new Category();
@@ -63,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             category.setParent(parent);
         }
-        category.setAuthor(author);
+        category.setAuthorEmail(author.getEmail());
 
         return categoryRepository.save(category);
     }

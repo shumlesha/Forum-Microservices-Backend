@@ -2,13 +2,13 @@ package com.example.securitylib.service.impl;
 
 
 import com.example.common.WebClientErrorResponse;
+import com.example.common.dto.UserDTO;
+import com.example.common.dto.VerificationTokenDTO;
 import com.example.common.exceptions.WebClientCustomException;
 import com.example.securitylib.dto.TokenResponse;
-import com.example.securitylib.dto.VerificationTokenDTO;
 import com.example.securitylib.props.JwtProperties;
 import com.example.securitylib.service.TokenProvider;
 import com.example.common.enums.Role;
-import com.example.common.models.User;
 import com.example.common.exceptions.AccessDeniedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -17,7 +17,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.apache.juli.VerbatimFormatter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -90,10 +89,10 @@ public class JwtTokenProvider implements TokenProvider {
 
         UUID userId = UUID.fromString(getId(refreshToken));
         //User user = userService.getById(userId);
-        User user = webClientBuilder.build().get()
+        UserDTO user = webClientBuilder.build().get()
                 .uri("http://users-app/api/users/findById?id=" + userId)
                 .retrieve()
-                .bodyToMono(User.class)
+                .bodyToMono(UserDTO.class)
                 .block();
         tokenResponse.setId(userId);
         tokenResponse.setEmail(user.getEmail());
@@ -176,7 +175,7 @@ public class JwtTokenProvider implements TokenProvider {
     @Override
     public boolean checkUserConfirmation(String token) {
         UUID userId = UUID.fromString(getId(token));
-        User user = webClientBuilder.build().get()
+        UserDTO user = webClientBuilder.build().get()
                 .uri("http://users-app/api/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
@@ -184,7 +183,7 @@ public class JwtTokenProvider implements TokenProvider {
                         return Mono.error(new WebClientCustomException(errorBody));
                     });
                 })
-                .bodyToMono(User.class)
+                .bodyToMono(UserDTO.class)
                 .block();
         return user.isConfirmed();
     }

@@ -1,6 +1,6 @@
 package com.example.users.repository;
 
-import com.example.common.models.VerificationToken;
+import com.example.users.models.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,8 @@
 package com.example.securitylib.service;
 
 import com.example.common.WebClientErrorResponse;
+import com.example.common.dto.UserDTO;
 import com.example.common.exceptions.WebClientCustomException;
-import com.example.common.models.User;
 import com.example.securitylib.security.JwtUserFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         //User user = userService.findByEmail(email);
-        User user = webClientBuilder.build().get()
+        UserDTO user = webClientBuilder.build().get()
                 .uri("http://users-app/api/users/findByEmail?email=" + email)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
@@ -31,7 +31,7 @@ public class JwtUserDetailsService implements UserDetailsService {
                         return Mono.error(new WebClientCustomException(errorBody));
                     });
                 })
-                .bodyToMono(User.class)
+                .bodyToMono(UserDTO.class)
                 .block();
         return JwtUserFactory.create(user);
     }

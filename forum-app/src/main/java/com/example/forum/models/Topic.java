@@ -1,7 +1,7 @@
 package com.example.forum.models;
 
 
-import com.example.common.models.User;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,9 +29,12 @@ public class Topic {
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+//    @ManyToOne
+//    @JoinColumn(name = "author_id", nullable = false)
+//    private User author;
+
+    @Column(name = "author_email", nullable = false)
+    private String authorEmail;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
