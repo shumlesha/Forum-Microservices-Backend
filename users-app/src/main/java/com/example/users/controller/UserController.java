@@ -1,12 +1,12 @@
 package com.example.users.controller;
 
 
-import com.example.common.models.User;
-import com.example.securitylib.dto.VerificationTokenDTO;
+import com.example.common.dto.UserDTO;
+import com.example.users.mapper.UserMapper;
+import com.example.users.models.User;
 import com.example.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -19,12 +19,12 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-
+    private final UserMapper userMapper;
 
     @PostMapping("/saveUser")
-    public User createUser(@RequestBody User user) {
+    public UserDTO createUser(@RequestBody UserDTO userDTO) {
         log.info("Создаем юзера");
-        return userService.createUser(user);
+        return userMapper.toDto(userService.createUser(userMapper.toEntity(userDTO)));
     }
 
     @PostMapping("/checkIfUserExists")
@@ -33,15 +33,15 @@ public class UserController {
     }
 
     @GetMapping("/findByEmail")
-    public User findByEmail(@RequestParam String email) {
+    public UserDTO findByEmail(@RequestParam String email) {
         log.info("Ищем по email");
-        return userService.findByEmail(email);
+        return userMapper.toDto(userService.findByEmail(email));
     }
 
 
     @GetMapping("/findById")
-    public Mono<User> findById(@RequestParam UUID id) {
+    public UserDTO findById(@RequestParam UUID id) {
         log.info("Ищем по id");
-        return userService.getById(id);
+        return userMapper.toDto(userService.getById(id));
     }
 }

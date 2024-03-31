@@ -1,6 +1,6 @@
 package com.example.forum.models;
 
-import com.example.common.models.User;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,9 +33,12 @@ public class Category {
     @OrderBy("name ASC")
     private List<Topic> topics;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+//    @ManyToOne
+//    @JoinColumn(name = "author_id", nullable = false)
+//    private User author;
+
+    @Column(name = "author_email", nullable = false)
+    private String authorEmail;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

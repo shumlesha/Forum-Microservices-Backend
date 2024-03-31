@@ -1,8 +1,8 @@
 package com.example.securitylib.security;
 
 
+import com.example.common.dto.UserDTO;
 import com.example.common.enums.Role;
-import com.example.common.models.User;
 import com.example.securitylib.JwtUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class JwtUserFactory {
 
-    public static JwtUser create(User user) {
+    public static JwtUser create(UserDTO user) {
         return new JwtUser(
                 user.getId(),
                 user.getEmail(),

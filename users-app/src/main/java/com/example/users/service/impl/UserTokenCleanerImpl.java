@@ -1,9 +1,8 @@
 package com.example.users.service.impl;
 
-import com.example.common.models.User;
-import com.example.common.models.VerificationToken;
-import com.example.users.repository.UserRepository;
-import com.example.users.repository.VerificationTokenRepository;
+import com.example.users.mapper.UserMapper;
+import com.example.users.models.User;
+import com.example.users.models.VerificationToken;
 import com.example.users.service.TokenService;
 import com.example.users.service.UserService;
 import com.example.users.service.UserTokenCleaner;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +22,7 @@ public class UserTokenCleanerImpl implements UserTokenCleaner {
     private final UserService userService;
     private final TokenService tokenService;
     private static final int EXPIRATION_TIME = 30;
+    private final UserMapper userMapper;
 
     @Scheduled(cron = "0 0 * * * *")
     @Override

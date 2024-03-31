@@ -1,6 +1,6 @@
 package com.example.forum.models;
 
-import com.example.common.models.User;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,7 +18,10 @@ public class CategoryModerator {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "moderator_id", nullable = false)
-    private User moderator;
+//    @ManyToOne
+//    @JoinColumn(name = "moderator_id", nullable = false)
+//    private User moderator;
+
+    @Column(name = "moderator_id", nullable = false)
+    private UUID moderatorId;
 }

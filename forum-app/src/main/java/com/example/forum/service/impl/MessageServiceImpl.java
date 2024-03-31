@@ -1,7 +1,6 @@
 package com.example.forum.service.impl;
 
-import com.example.common.models.User;
-import com.example.common.exceptions.AccessDeniedException;
+import com.example.common.dto.UserDTO;
 import com.example.common.exceptions.ResourceNotFoundException;
 import com.example.forum.dto.Message.CreateMessageModel;
 import com.example.forum.dto.Message.EditMessageModel;
@@ -42,16 +41,16 @@ public class MessageServiceImpl implements MessageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Топика с таким id не существует: " + topicId));
         //User author = userRepository.findById(authorId)
                 //.orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
-        User author = webClientBuilder.build().get()
+        UserDTO author = webClientBuilder.build().get()
                 .uri("http://users-app/api/users/findById?id=" + authorId)
                 .retrieve()
-                .bodyToMono(User.class)
+                .bodyToMono(UserDTO.class)
                 .block();
 
         Message message = new Message();
         message.setContent(createMessageModel.getContent());
         message.setTopic(topic);
-        message.setAuthor(author);
+        message.setAuthorEmail(author.getEmail());
         return messageRepository.save(message);
     }
 

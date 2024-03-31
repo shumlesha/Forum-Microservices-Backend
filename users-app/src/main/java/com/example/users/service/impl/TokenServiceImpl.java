@@ -1,7 +1,8 @@
 package com.example.users.service.impl;
 
-import com.example.securitylib.dto.VerificationTokenDTO;
-import com.example.common.models.VerificationToken;
+import com.example.common.dto.VerificationTokenDTO;
+import com.example.users.mapper.VerificationTokenMapper;
+import com.example.users.models.VerificationToken;
 import com.example.users.repository.VerificationTokenRepository;
 import com.example.users.service.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService {
     private final VerificationTokenRepository verificationTokenRepository;
+    private final VerificationTokenMapper verificationTokenMapper;
     @Override
     @Transactional
     public void createToken(VerificationTokenDTO verificationTokenDTO) {

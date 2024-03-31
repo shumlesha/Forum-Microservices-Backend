@@ -1,9 +1,8 @@
 package com.example.securitylib.service;
 
-import com.example.common.models.User;
+import com.example.common.dto.UserDTO;
 
-import java.util.Properties;
 
 public interface EmailService {
-    void sendEmail(User user);
+    void sendEmail(UserDTO user);
 }

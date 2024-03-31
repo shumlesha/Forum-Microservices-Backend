@@ -2,17 +2,18 @@ package com.example.auth.service.impl;
 
 
 import com.example.auth.dto.RegisterResponse;
+import com.example.common.dto.UserDTO;
+import com.example.common.dto.VerificationTokenDTO;
 import com.example.common.exceptions.AccountNotConfirmedException;
 import com.example.common.exceptions.BrokenVerifyLinkException;
 import com.example.common.exceptions.WebClientCustomException;
-import com.example.common.models.VerificationToken;
+
 import com.example.securitylib.dto.TokenResponse;
 import com.example.auth.dto.UserLoginModel;
 import com.example.common.WebClientErrorResponse;
 import com.example.common.enums.Role;
-import com.example.common.models.User;
+
 import com.example.auth.service.AuthService;
-import com.example.securitylib.dto.VerificationTokenDTO;
 import com.example.securitylib.service.EmailService;
 import com.example.securitylib.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    public User create(User user) {
+    public UserDTO create(UserDTO user) {
 
         /*if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalStateException("Пользователь с email " + user.getEmail() + " уже существует");
@@ -54,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
                 .block());
 
         if (isUserExists) {
-            User dbuser = webClientBuilder.build().get()
+            UserDTO dbuser = webClientBuilder.build().get()
                     .uri("http://users-app/api/users/findByEmail?email=" + user.getEmail())
                     .retrieve()
                     .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
@@ -62,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
                             return Mono.error(new RuntimeException(errorBody.getMessage()));
                         });
                     })
-                    .bodyToMono(User.class)
+                    .bodyToMono(UserDTO.class)
                     .block();
 
             if (dbuser.isConfirmed()) {
@@ -86,16 +87,16 @@ public class AuthServiceImpl implements AuthService {
                 .uri("http://users-app/api/users/saveUser")
                 .bodyValue(user)
                 .retrieve()
-                .bodyToMono(User.class).block();
+                .bodyToMono(UserDTO.class).block();
         //return userRepository.save(user);
     }
     @Override
-    public RegisterResponse register(User user) {
-        User createdUser = create(user);
+    public RegisterResponse register(UserDTO user) {
+        UserDTO createdUser = create(user);
 
-        Optional<VerificationToken> token = webClientBuilder.build().get().uri("http://users-app/api/tokens/getToken?email="+user.getEmail())
+        Optional<VerificationTokenDTO> token = webClientBuilder.build().get().uri("http://users-app/api/tokens/getToken?email="+user.getEmail())
                 .retrieve()
-                .bodyToMono(VerificationToken.class)
+                .bodyToMono(VerificationTokenDTO.class)
                 .blockOptional();
 
         if (token.isEmpty()) {
@@ -127,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         //User user = userService.findByEmail(userLoginModel.getEmail());
-        User user = webClientBuilder.build().get()
+        UserDTO user = webClientBuilder.build().get()
                 .uri("http://users-app/api/users/findByEmail?email=" + userLoginModel.getEmail())
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
@@ -135,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
                         return Mono.error(new RuntimeException(errorBody.getMessage()));
                     });
                 })
-                .bodyToMono(User.class)
+                .bodyToMono(UserDTO.class)
                 .block();
 
         if (!user.isConfirmed()) {
@@ -156,7 +157,7 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse confirmUser(String token) {
         if (jwtTokenProvider.validateEmailToken(token)) {
             UUID userId = UUID.fromString(jwtTokenProvider.getId(token));
-            User user = webClientBuilder.build().get()
+            UserDTO user = webClientBuilder.build().get()
                     .uri("http://users-app/api/users/findById?id=" + userId)
                     .retrieve()
                     .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
@@ -164,16 +165,16 @@ public class AuthServiceImpl implements AuthService {
                             return Mono.error(new WebClientCustomException(errorBody));
                         });
                     })
-                    .bodyToMono(User.class)
+                    .bodyToMono(UserDTO.class)
                     .block();
 
             if (!user.isConfirmed()) {
                 user.setConfirmed(true);
-                User savedUser = webClientBuilder.build().post()
+                UserDTO savedUser = webClientBuilder.build().post()
                         .uri("http://users-app/api/users/saveUser")
                         .bodyValue(user)
                         .retrieve()
-                        .bodyToMono(User.class).block();
+                        .bodyToMono(UserDTO.class).block();
                 String accessToken = jwtTokenProvider.createAccessToken(savedUser.getId(), savedUser.getEmail(), savedUser.getRoles());
                 String refreshToken = jwtTokenProvider.createRefreshToken(savedUser.getId(), savedUser.getEmail());
                 //jwtTokenProvider.dropEmailToken(token);
