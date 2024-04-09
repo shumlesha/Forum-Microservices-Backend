@@ -62,6 +62,11 @@ minio server [Путь хранения MinIO-файлов] --console-address ":
 - JWT_ACCESS: время жизни access-токена в миллисекундах
 - JWT_REFRESH: время жизни refresh-токена в миллисекундах
 - API_SECRET: межсервисный API-ключ (также можно сгенерировать на https://www.base64encode.net/)
+- MAIL_HOST: хост для отправки gmail по SMTP
+- MAIL_PORT: spring-mail порт
+- MAIL_USERNAME: gmail-адрес отправляющего от имени форума
+- MAIL_PASSWORD: пароль для MAIL_USERNAME
+- MIGRATION_TYPE: флаг ddl-auto
 
 # API Documentation
 
