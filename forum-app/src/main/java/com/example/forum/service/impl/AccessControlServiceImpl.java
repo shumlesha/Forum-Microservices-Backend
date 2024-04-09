@@ -29,7 +29,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Override
     public boolean canModerateTopic(UUID userId, UUID topicId) {
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + userId)
+                .uri("http://users-app/api/internal/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
@@ -49,7 +49,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Override
     public boolean isTopicOwner(UUID userId, UUID topicId) {
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + userId)
+                .uri("http://users-app/api/internal/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
@@ -66,7 +66,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Override
     public boolean isMessageOwner(UUID userId, UUID messageId) {
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + userId)
+                .uri("http://users-app/api/internal/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
@@ -84,7 +84,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Override
     public boolean canModerateMessage(UUID userId, UUID messageId) {
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + userId)
+                .uri("http://users-app/api/internal/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {

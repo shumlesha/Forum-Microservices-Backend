@@ -24,7 +24,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         //User user = userService.findByEmail(email);
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findByEmail?email=" + email)
+                .uri("http://users-app/api/internal/users/findByEmail?email=" + email)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {

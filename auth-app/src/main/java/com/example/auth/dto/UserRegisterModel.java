@@ -1,10 +1,6 @@
 package com.example.auth.dto;
 
-import com.example.auth.dto.validation.Age;
-import com.example.auth.dto.validation.OnCreate;
-import com.example.auth.dto.validation.OnUpdate;
-import com.example.auth.dto.validation.Password;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.example.common.dto.validation.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +8,7 @@ import jakarta.validation.constraints.Past;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,12 +20,16 @@ public class UserRegisterModel {
 
     @Past(message = "Дата рождения дожна быть прошедшей", groups = {OnCreate.class, OnUpdate.class})
     @Age(groups = {OnCreate.class, OnUpdate.class})
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @NotBlank(message = "Необходим email", groups = {OnCreate.class, OnUpdate.class})
     @Email(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$",
             message = "Необходим валидный email", groups = {OnCreate.class, OnUpdate.class})
     private String email;
+
+    @NotBlank(message = "Необходим номер телефона", groups = {OnCreate.class, OnUpdate.class})
+    @PhoneNumber(message = "Некорректный номер телефона", groups = {OnCreate.class, OnUpdate.class})
+    private String phoneNumber;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Необходим пароль", groups = {OnCreate.class, OnUpdate.class})

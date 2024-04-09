@@ -4,6 +4,7 @@ import com.example.common.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -20,10 +21,13 @@ public class User {
     private String fullName;
 
     @Column(name = "birth_date", nullable = false)
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private String phoneNumber;
 
     @Column(nullable = false)
     private String password;
@@ -39,5 +43,8 @@ public class User {
 
     @Column(nullable = false)
     private boolean confirmed = false;
+
+    @Column(nullable = false)
+    private boolean banned = false;
 
 }

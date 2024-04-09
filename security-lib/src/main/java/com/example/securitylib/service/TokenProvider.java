@@ -26,4 +26,6 @@ public interface TokenProvider {
     boolean validateEmailToken(String token);
 
     void dropEmailToken(String token);
+
+    boolean isBanned(String token);
 }

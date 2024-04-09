@@ -9,30 +9,30 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Builder
+
 @Data
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "files")
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private long size;
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime dateTime;
 
-    @Column
+    @Column(nullable = false)
     private String content;
 
-    @Column
+    @Column(nullable = false)
     private String mimeType;
 
+    @Column(name="owner_email", nullable = false)
+    private String ownerEmail;
 }

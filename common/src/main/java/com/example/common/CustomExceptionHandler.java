@@ -163,6 +163,20 @@ public class CustomExceptionHandler {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, "Check your token-format");
     }
 
+    @ExceptionHandler(TooManyAttachmentsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleTooManyAttachmentsException(TooManyAttachmentsException e) {
+        log.error(e.getMessage(), e);
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(NotFileOwnerException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleNotFileOwnerException(NotFileOwnerException e) {
+        log.error(e.getMessage(), e);
+        return new ErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(Exception e) {

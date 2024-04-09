@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -64,7 +63,7 @@ public class SecurityConfig {
                         configurer.requestMatchers("/**","/api/accounts/login",
                                         "/api/accounts/register",
                                         "/api/accounts/refresh",
-                                        "api/users/findByEmail",
+                                        "api/internal/users/findByEmail",
 
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**").permitAll()

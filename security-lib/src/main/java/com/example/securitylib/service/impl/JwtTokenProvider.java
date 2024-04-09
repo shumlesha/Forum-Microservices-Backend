@@ -90,7 +90,7 @@ public class JwtTokenProvider implements TokenProvider {
         UUID userId = UUID.fromString(getId(refreshToken));
         //User user = userService.getById(userId);
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + userId)
+                .uri("http://users-app/api/internal/users/findById?id=" + userId)
                 .retrieve()
                 .bodyToMono(UserDTO.class)
                 .block();
@@ -163,7 +163,7 @@ public class JwtTokenProvider implements TokenProvider {
         token.setExpirationDate(validity);
         token.setEmail(email);
         webClientBuilder.build().post()
-                .uri("http://users-app/api/tokens/createToken")
+                .uri("http://users-app/api/internal/tokens/createToken")
                 .bodyValue(token)
                 .exchange()
                 .block();
@@ -176,7 +176,7 @@ public class JwtTokenProvider implements TokenProvider {
     public boolean checkUserConfirmation(String token) {
         UUID userId = UUID.fromString(getId(token));
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + userId)
+                .uri("http://users-app/api/internal/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
@@ -197,7 +197,7 @@ public class JwtTokenProvider implements TokenProvider {
                     .parseClaimsJws(token);
 
             boolean isTokenInDb = Boolean.TRUE.equals(webClientBuilder.build().post()
-                    .uri("http://users-app/api/tokens/checkIfTokenExists?token=" + token)
+                    .uri("http://users-app/api/internal/tokens/checkIfTokenExists?token=" + token)
                     .retrieve()
                     .bodyToMono(Boolean.class)
                     .block());
@@ -217,10 +217,24 @@ public class JwtTokenProvider implements TokenProvider {
     public void dropEmailToken(String token) {
 
         webClientBuilder.build().delete()
-                .uri("http://users-app/api/tokens/deleteToken?token=" + token)
+                .uri("http://users-app/api/internal/tokens/deleteToken?token=" + token)
                 .exchange()
                 .block();
 
+    }
+
+    @Override
+    public boolean isBanned(String token) {
+        return Boolean.TRUE.equals(webClientBuilder.build().get()
+                .uri("http://users-app/api/internal/users/checkIfUserBanned?email=" + getEmail(token))
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
+                    return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
+                        return Mono.error(new WebClientCustomException(errorBody));
+                    });
+                })
+                .bodyToMono(Boolean.class)
+                .block());
     }
 
 }

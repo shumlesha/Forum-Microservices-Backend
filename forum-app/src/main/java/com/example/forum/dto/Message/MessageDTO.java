@@ -1,11 +1,13 @@
 package com.example.forum.dto.Message;
 
 
+import com.example.common.dto.AttachmentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -18,4 +20,5 @@ public class MessageDTO {
     private String authorEmail;
     private LocalDateTime createTime;
     private LocalDateTime modifiedDate;
+    private List<AttachmentDTO> attachments;
 }

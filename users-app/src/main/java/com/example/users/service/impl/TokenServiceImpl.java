@@ -54,6 +54,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    @Transactional
     public void delete(VerificationToken token) {
         verificationTokenRepository.delete(token);
     }

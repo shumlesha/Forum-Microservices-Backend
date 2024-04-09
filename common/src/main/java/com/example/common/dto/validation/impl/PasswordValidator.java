@@ -1,6 +1,6 @@
-package com.example.auth.dto.validation.impl;
+package com.example.common.dto.validation.impl;
 
-import com.example.auth.dto.validation.Password;
+import com.example.common.dto.validation.Password;
 import com.google.common.base.Joiner;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

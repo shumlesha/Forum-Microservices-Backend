@@ -1,5 +1,9 @@
 package com.example.files.service.impl;
 
+import com.example.common.dto.AttachmentDTO;
+import com.example.common.dto.AttachmentsRequest;
+import com.example.common.exceptions.AccessDeniedException;
+import com.example.common.exceptions.NotFileOwnerException;
 import com.example.files.FileRepository;
 import com.example.files.dto.FileDTO;
 import com.example.common.exceptions.FileNotFoundException;
@@ -18,10 +22,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,22 +44,25 @@ public class FileServiceImpl implements FileService {
 
     @Value("${minio.bucketName}")
     private String bucketName;
+
     @Override
-    public UUID saveFile(MultipartFile file) {
+    @Transactional
+    public UUID saveFile(MultipartFile file, String email) {
         if (file.isEmpty() || file.getOriginalFilename() == null) {
             throw new FileUploadException(HttpStatus.BAD_REQUEST, "Неверный формат файла");
         }
 
         String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
 
-        File fileObj = File.builder()
-                .name(file.getOriginalFilename())
-                .size(file.getSize())
-                .dateTime(LocalDateTime.now())
-                .content(fileName)
-                .mimeType(file.getContentType())
-                .build();
+        File fileObj = new File();
+        fileObj.setName(file.getOriginalFilename());
+        fileObj.setSize(file.getSize());
+        fileObj.setDateTime(LocalDateTime.now());
+        fileObj.setContent(fileName);
+        fileObj.setMimeType(file.getContentType());
+        fileObj.setOwnerEmail(email);
         fileObj = fileRepository.save(fileObj);
+
 
         putFile(fileName, file);
 
@@ -95,10 +104,31 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<FileDTO> getFiles() {
-        List<File> allFiles = fileRepository.findAll();
-        return allFiles.stream()
-                .map(FileDTO::from)
-                .collect(Collectors.toList());
+    public List<File> getFiles() {
+        return fileRepository.findAll();
+    }
+
+    @Override
+    public List<AttachmentDTO> multipleUpload(AttachmentsRequest attachRequest) {
+        List<AttachmentDTO> attachedFiles = new ArrayList<>();
+
+        String email = attachRequest.getEmail();
+        for (UUID fileId: attachRequest.getAttachments()) {
+            File fileObj = fileRepository.findById(fileId)
+                   .orElseThrow(() -> new FileNotFoundException(HttpStatus.NOT_FOUND, "Не найдено файла с таким id:  " + fileId));
+
+            if (!email.equals(fileObj.getOwnerEmail())) {
+                throw new NotFileOwnerException("Вы не являетесь владельцем одного из прикрепленных файлов");
+            }
+
+            AttachmentDTO fileDTO = new AttachmentDTO();
+            fileDTO.setName(fileObj.getName());
+            fileDTO.setSize(fileObj.getSize());
+            fileDTO.setFileId(fileObj.getId());
+
+            attachedFiles.add(fileDTO);
+
+        }
+        return attachedFiles;
     }
 }

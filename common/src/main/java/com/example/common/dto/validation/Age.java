@@ -1,7 +1,7 @@
-package com.example.auth.dto.validation;
+package com.example.common.dto.validation;
 
 
-import com.example.auth.dto.validation.impl.AgeValidator;
+import com.example.common.dto.validation.impl.AgeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -15,8 +17,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CreateMessageModel {
 
-    @NotBlank(message = "Сообщение не может быть пустым")
+
     @NotNull(message = "Сообщение не должно быть равным null")
-    @Size(min = 1, max = 4500, message = "Сообщение должно содержать от 1 до 4500 символов")
+    @Size(max = 4500, message = "Сообщение должно содержать от 0 до 4500 символов")
     private String content;
+
+    private List<UUID> attachments;
 }
