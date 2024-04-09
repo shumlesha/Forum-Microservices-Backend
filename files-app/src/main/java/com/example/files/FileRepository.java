@@ -11,4 +11,6 @@ import java.util.UUID;
 @Repository
 public interface FileRepository extends JpaRepository<File, UUID> {
     List<File> findAllByIdIn(List<UUID> attachments);
+
+    List<File> findAllByOwnerEmail(String email);
 }
