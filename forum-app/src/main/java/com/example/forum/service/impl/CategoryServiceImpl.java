@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
         //User author = userRepository.findById(authorId)
                 //.orElseThrow(() -> new ResourceNotFoundException("Пользователя с таким id не существует: " + authorId));
         UserDTO author = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + authorId)
+                .uri("http://users-app/api/internal/users/findById?id=" + authorId)
                 .retrieve()
                 .bodyToMono(UserDTO.class)
                 .block();

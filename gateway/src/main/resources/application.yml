@@ -14,12 +14,29 @@ spring:
             - AuthenticationFilter
             - RewritePath=/forum/(?<segment>.*), /$\{segment}
 
+        - id: users-route
+          uri: lb://USERS-APP
+          predicates:
+            - Path=/users/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/users/(?<segment>.*), /$\{segment}
+
+        - id: files-route
+          uri: lb://FILES-APP
+          predicates:
+            - Path=/files/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/files/(?<segment>.*), /$\{segment}
+
         - id: auth-route
           uri: lb://AUTH-APP
           predicates:
             - Path=/auth/**
           filters:
             - RewritePath=/auth/(?<segment>.*), /$\{segment}
+
       discovery:
         locator:
           enabled: true
@@ -53,3 +70,7 @@ springdoc:
         url: /forum/v3/api-docs
       - name: AuthService
         url: /auth/v3/api-docs
+      - name: UsersService
+        url: /users/v3/api-docs
+      - name: FilesService
+        url: /files/v3/api-docs

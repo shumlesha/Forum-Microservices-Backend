@@ -49,18 +49,23 @@ public class AuthServiceImpl implements AuthService {
         }*/
 
         boolean isUserExists = Boolean.TRUE.equals(webClientBuilder.build().post()
-                .uri("http://users-app/api/users/checkIfUserExists?email=" + user.getEmail())
+                .uri("http://users-app/api/internal/users/checkIfUserExists?email=" + user.getEmail())
                 .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
+                    return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
+                        return Mono.error(new WebClientCustomException(errorBody));
+                    });
+                })
                 .bodyToMono(Boolean.class)
                 .block());
 
         if (isUserExists) {
             UserDTO dbuser = webClientBuilder.build().get()
-                    .uri("http://users-app/api/users/findByEmail?email=" + user.getEmail())
+                    .uri("http://users-app/api/internal/users/findByEmail?email=" + user.getEmail())
                     .retrieve()
                     .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                         return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
-                            return Mono.error(new RuntimeException(errorBody.getMessage()));
+                            return Mono.error(new WebClientCustomException(errorBody));
                         });
                     })
                     .bodyToMono(UserDTO.class)
@@ -84,9 +89,14 @@ public class AuthServiceImpl implements AuthService {
 
 
         return webClientBuilder.build().post()
-                .uri("http://users-app/api/users/saveUser")
+                .uri("http://users-app/api/internal/users/saveUser")
                 .bodyValue(user)
                 .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
+                    return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
+                        return Mono.error(new WebClientCustomException(errorBody));
+                    });
+                })
                 .bodyToMono(UserDTO.class).block();
         //return userRepository.save(user);
     }
@@ -94,8 +104,13 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse register(UserDTO user) {
         UserDTO createdUser = create(user);
 
-        Optional<VerificationTokenDTO> token = webClientBuilder.build().get().uri("http://users-app/api/tokens/getToken?email="+user.getEmail())
+        Optional<VerificationTokenDTO> token = webClientBuilder.build().get().uri("http://users-app/api/internal/tokens/getToken?email=" +user.getEmail())
                 .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
+                    return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
+                        return Mono.error(new WebClientCustomException(errorBody));
+                    });
+                })
                 .bodyToMono(VerificationTokenDTO.class)
                 .blockOptional();
 
@@ -129,11 +144,11 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         //User user = userService.findByEmail(userLoginModel.getEmail());
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findByEmail?email=" + userLoginModel.getEmail())
+                .uri("http://users-app/api/internal/users/findByEmail?email=" + userLoginModel.getEmail())
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
-                        return Mono.error(new RuntimeException(errorBody.getMessage()));
+                        return Mono.error(new WebClientCustomException(errorBody));
                     });
                 })
                 .bodyToMono(UserDTO.class)
@@ -158,7 +173,7 @@ public class AuthServiceImpl implements AuthService {
         if (jwtTokenProvider.validateEmailToken(token)) {
             UUID userId = UUID.fromString(jwtTokenProvider.getId(token));
             UserDTO user = webClientBuilder.build().get()
-                    .uri("http://users-app/api/users/findById?id=" + userId)
+                    .uri("http://users-app/api/internal/users/findById?id=" + userId)
                     .retrieve()
                     .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                         return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
@@ -171,9 +186,14 @@ public class AuthServiceImpl implements AuthService {
             if (!user.isConfirmed()) {
                 user.setConfirmed(true);
                 UserDTO savedUser = webClientBuilder.build().post()
-                        .uri("http://users-app/api/users/saveUser")
+                        .uri("http://users-app/api/internal/users/saveUser")
                         .bodyValue(user)
                         .retrieve()
+                        .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
+                            return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
+                                return Mono.error(new WebClientCustomException(errorBody));
+                            });
+                        })
                         .bodyToMono(UserDTO.class).block();
                 String accessToken = jwtTokenProvider.createAccessToken(savedUser.getId(), savedUser.getEmail(), savedUser.getRoles());
                 String refreshToken = jwtTokenProvider.createRefreshToken(savedUser.getId(), savedUser.getEmail());

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/tokens")
+@RequestMapping("/api/internal/tokens")
 @RequiredArgsConstructor
 public class TokenController {
 

@@ -25,12 +25,22 @@ public class ApiKeyFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         String apiKey = ((HttpServletRequest) servletRequest).getHeader(API_HEADER);
         String validApiKey = apiProperties.getSecret();
-        if (!validApiKey.equals(apiKey)) {
-            log.info("Bad");
-            ((HttpServletResponse) servletResponse).setStatus(HttpStatus.FORBIDDEN.value());
-            return;
+        log.info("Запрос в API-FILTER дошел");
+        if (apiKey != null) {
+            if (!validApiKey.equals(apiKey)) {
+                log.info("Bad");
+                log.info("Path: " + ((HttpServletRequest) servletRequest).getPathInfo());
+                log.info(((HttpServletRequest) servletRequest).getServletPath());
+                log.info(((HttpServletRequest) servletRequest).getRequestURL().toString());
+                ((HttpServletResponse) servletResponse).setStatus(HttpStatus.FORBIDDEN.value());
+                return;
+            }
+            else {
+                SecurityContextHolder.getContext().setAuthentication(new IntegrationAuthentication());
+            }
         }
-        SecurityContextHolder.getContext().setAuthentication(new IntegrationAuthentication());
+
+
         chain.doFilter(servletRequest, servletResponse);
 
     }

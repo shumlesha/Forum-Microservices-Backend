@@ -13,13 +13,4 @@ public class FileDTO {
     private String name;
     private long size;
     private LocalDateTime dateTime;
-
-    public static FileDTO from(File file) {
-        FileDTO dto = new FileDTO();
-        dto.setId(file.getId());
-        dto.setName(file.getName());
-        dto.setSize(file.getSize());
-        dto.setDateTime(file.getDateTime());
-        return dto;
-    }
 }

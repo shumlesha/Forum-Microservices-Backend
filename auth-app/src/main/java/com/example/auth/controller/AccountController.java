@@ -6,7 +6,7 @@ import com.example.securitylib.dto.TokenResponse;
 import com.example.auth.service.AuthService;
 import com.example.auth.dto.UserLoginModel;
 import com.example.auth.dto.UserRegisterModel;
-import com.example.auth.dto.validation.OnCreate;
+import com.example.common.dto.validation.OnCreate;
 import com.example.auth.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -19,10 +20,12 @@ import java.util.UUID;
 public class UserDTO {
     UUID id;
     String fullName;
-    LocalDateTime birthDate;
+    LocalDate birthDate;
     String email;
+    String phoneNumber;
     String password;
     String confirmPassword;
     Set<Role> roles;
     boolean confirmed;
+    boolean banned;
 }

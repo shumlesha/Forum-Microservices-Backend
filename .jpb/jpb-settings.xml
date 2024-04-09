@@ -17,6 +17,11 @@
           <package value="com.example.users.models" />
         </packages>
       </persistence-unit>
+      <persistence-unit name="Files">
+        <packages>
+          <package value="com.example.files.model" />
+        </packages>
+      </persistence-unit>
     </persistence-units>
   </component>
 </project>

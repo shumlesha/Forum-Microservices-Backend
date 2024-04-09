@@ -19,4 +19,14 @@ public interface UserService {
 
 
     void delete(User user);
+    
+    User registerNewUser(User user);
+
+    void editUser(User user, UUID userId);
+
+    void banUser(UUID userId, UUID currentUserId);
+
+    void unbanUser(UUID userId, UUID currentUserId);
+
+    Boolean checkIfUserBanned(String email);
 }

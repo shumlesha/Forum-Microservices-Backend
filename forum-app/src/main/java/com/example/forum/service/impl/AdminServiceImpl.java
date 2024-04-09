@@ -40,7 +40,7 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new ResourceNotFoundException("Категории с таким id не существует: " + appointModeratorModel.getCategoryId()));
 
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + userId)
+                .uri("http://users-app/api/internal/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
@@ -72,7 +72,7 @@ public class AdminServiceImpl implements AdminService {
         if (!user.getRoles().contains(Role.ROLE_MODERATOR)) {
             user.setRoles(Set.of(Role.ROLE_MODERATOR, Role.ROLE_USER));
             webClientBuilder.build().post()
-                  .uri("http://users-app/api/users/saveUser")
+                  .uri("http://users-app/api/internal/users/saveUser")
                   .bodyValue(user)
                   .retrieve()
                   .bodyToMono(UserDTO.class).block();
@@ -89,7 +89,7 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new ResourceNotFoundException("Категории с таким id не существует: " + removeModeratorModel.getCategoryId()));
 
         UserDTO user = webClientBuilder.build().get()
-                .uri("http://users-app/api/users/findById?id=" + userId)
+                .uri("http://users-app/api/internal/users/findById?id=" + userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError() || httpStatus.is5xxServerError(), response -> {
                     return response.bodyToMono(WebClientErrorResponse.class).flatMap(errorBody -> {
@@ -114,7 +114,7 @@ public class AdminServiceImpl implements AdminService {
         if (!categoryModeratorRepository.existsByModeratorId(user.getId())) {
             user.setRoles(Set.of(Role.ROLE_USER));
             webClientBuilder.build().post()
-                 .uri("http://users-app/api/users/saveUser")
+                 .uri("http://users-app/api/internal/users/saveUser")
                  .bodyValue(user)
                  .retrieve()
                  .bodyToMono(UserDTO.class).block();
