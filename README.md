@@ -30,6 +30,11 @@
 ## Users Database
 ![Users DB](docs/Users_DB.png)
 
+
+### Migrations
+В .env файле используется переменная MIGRATION_TYPE=validate + Flyway
+
+
 # Configuration/Installation
 
 Необходимо запустить сервисы в следующем порядке:
@@ -40,7 +45,8 @@
 5. FileServer
 6. Cloud Gateway (1)
 
-
+Также для FILES-APP необходимо поднять MinIO:
+minio server [Путь хранения MinIO-файлов] --console-address ":9001"
 
 
 # Environments
