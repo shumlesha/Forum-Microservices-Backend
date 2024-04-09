@@ -131,4 +131,9 @@ public class FileServiceImpl implements FileService {
         }
         return attachedFiles;
     }
+
+    @Override
+    public List<File> getPersonalFiles(String email) {
+        return fileRepository.findAllByOwnerEmail(email);
+    }
 }

@@ -6,6 +6,7 @@ import com.example.files.mapper.FileMapper;
 import com.example.files.model.FileWrapper;
 import com.example.files.service.FileService;
 import com.example.securitylib.JwtUser;
+import io.minio.credentials.Jwt;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -61,5 +62,15 @@ public class FileController {
         return ResponseEntity.ok(fileService.getFiles().stream()
                 .map(fileMapper::toDto)
                 .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/getMy")
+    @Operation(summary = "Get all personal uploaded files from S3-source")
+    public ResponseEntity<List<FileDTO>> getPersonalFiles(@AuthenticationPrincipal JwtUser jwtUser) {
+        log.info("Только свои файлы");
+        return ResponseEntity.ok(fileService.getPersonalFiles(jwtUser.getEmail()).stream()
+                .map(fileMapper::toDto)
+                .collect(Collectors.toList())
+        );
     }
 }
