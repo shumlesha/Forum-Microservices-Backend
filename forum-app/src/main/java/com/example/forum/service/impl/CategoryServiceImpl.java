@@ -2,12 +2,15 @@ package com.example.forum.service.impl;
 
 import com.example.common.dto.UserDTO;
 
+import com.example.common.enums.Role;
 import com.example.common.exceptions.CategoryHasSubcategoriesException;
 import com.example.common.exceptions.ObjectAlreadyExistsException;
 import com.example.common.exceptions.ResourceNotFoundException;
 import com.example.forum.dto.Category.CreateCategoryModel;
 import com.example.forum.dto.Category.EditCategoryModel;
 import com.example.forum.models.Category;
+import com.example.forum.models.CategoryModerator;
+import com.example.forum.repository.CategoryModeratorRepository;
 import com.example.forum.repository.CategoryRepository;
 import com.example.forum.repository.TopicRepository;
 import com.example.forum.service.CategoryService;
@@ -26,6 +29,8 @@ import java.util.UUID;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+
+    private final CategoryModeratorRepository categoryModeratorRepository;
 
     private final TopicRepository topicRepository;
 
@@ -56,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (createCategoryModel.getParentId() != null) {
             Category parent = categoryRepository.findById(createCategoryModel.getParentId()).orElseThrow(
-                    () -> new ResourceNotFoundException("Категория с таким id не сущесвуетвует: " + createCategoryModel.getParentId()));
+                    () -> new ResourceNotFoundException("Категории с таким id не сущесвуетвует: " + createCategoryModel.getParentId()));
 
             if (topicRepository.existsByCategory(parent)) {
                 throw new CategoryHasSubcategoriesException("Категории нельзя создать в категории с имеющимися топиками");
@@ -66,7 +71,16 @@ public class CategoryServiceImpl implements CategoryService {
         }
         category.setAuthorEmail(author.getEmail());
 
-        return categoryRepository.save(category);
+        Category savedCategory = categoryRepository.save(category);
+
+        if (createCategoryModel.getParentId() != null && author.getRoles().contains(Role.ROLE_MODERATOR)) {
+            CategoryModerator categoryModerator = new CategoryModerator();
+            categoryModerator.setCategory(savedCategory);
+            categoryModerator.setModeratorId(author.getId());
+            categoryModeratorRepository.save(categoryModerator);
+        }
+
+        return savedCategory;
     }
 
     @Override
