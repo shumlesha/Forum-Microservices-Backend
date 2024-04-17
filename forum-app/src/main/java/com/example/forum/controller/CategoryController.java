@@ -37,7 +37,7 @@ public class CategoryController {
 
     @Operation(summary = "Create category")
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@acsi.canModerateCategory(#jwtUser.id, #createCategoryModel.parentId)")
     public ResponseEntity<CategoryDTO> createCategory(@AuthenticationPrincipal JwtUser jwtUser,
                                             @Validated @RequestBody CreateCategoryModel createCategoryModel) {
         log.info("Создание категории с названием {}", createCategoryModel.getName());
@@ -49,8 +49,10 @@ public class CategoryController {
 
     @Operation(summary = "Update category")
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> editCategory(@PathVariable UUID id, @Validated @RequestBody EditCategoryModel editCategoryModel) {
+    @PreAuthorize("@acsi.canModerateCategory(#jwtUser.id, #id)")
+    public ResponseEntity<?> editCategory(@PathVariable UUID id,
+                                          @Validated @RequestBody EditCategoryModel editCategoryModel,
+                                          @AuthenticationPrincipal JwtUser jwtUser) {
         log.info("Редактирование категории с id {}", id);
         categoryService.editCategory(id, editCategoryModel);
         return ResponseEntity.ok().build();
@@ -58,8 +60,9 @@ public class CategoryController {
 
     @Operation(summary = "Delete category")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteCategory(@PathVariable UUID id) {
+    @PreAuthorize("@acsi.canModerateCategory(#jwtUser.id, #id)")
+    public ResponseEntity<?> deleteCategory(@PathVariable UUID id,
+                                            @AuthenticationPrincipal JwtUser jwtUser) {
         log.info("Удаление категории с id {}", id);
         categoryService.deleteCategory(id);
         return ResponseEntity.ok().build();
