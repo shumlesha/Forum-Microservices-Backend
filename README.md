@@ -22,13 +22,13 @@
 На данный момент используются различные Базы Данных под сервисы:
 
 ## Files Database
-![Files DB](docs/Files_DB.png)
+[<img src="docs/Files_DB.png" width="250" />](docs/Files_DB.png)
 
 ## Forum Database
-![Forum DB](docs/Forum_DB.png)
+[<img src="docs/Forum_DB.png" width="250" />](docs/Forum_DB.png)
 
 ## Users Database
-![Users DB](docs/Users_DB.png)
+[<img src="docs/Users_DB.png" width="250" />](docs/Users_DB.png)
 
 
 ### Migrations
