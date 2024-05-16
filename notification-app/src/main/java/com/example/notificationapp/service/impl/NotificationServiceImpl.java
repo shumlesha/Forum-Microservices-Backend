@@ -6,6 +6,7 @@ import com.example.notificationapp.repository.NotificationRepository;
 import com.example.notificationapp.service.NotificationService;
 import com.example.securitylib.JwtUser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
@@ -40,6 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public Page<Notification> getNotifications(JwtUser jwtUser, String queryText, Pageable pageable) {
         Page<Notification> notifications;
+        log.info(pageable.toString());
         if (queryText == null || queryText.isBlank()) {
             notifications = notificationRepository.findByReceiverEmailOrderByIsReadAsc(jwtUser.getEmail(), pageable);
         }

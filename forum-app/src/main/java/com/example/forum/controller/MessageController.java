@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -67,7 +68,7 @@ public class MessageController {
     @Operation(summary = "Get messages with pagination by topicId")
     @GetMapping("/{topicId}")
     public ResponseEntity<Page<MessageDTO>> getMessages(@PathVariable UUID topicId,
-                                                     @PageableDefault(sort = "createTime",
+                                                     @ParameterObject @PageableDefault(sort = "createTime",
                                                              direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(messageService.getMessages(topicId, pageable).map(messageMapper::toDTO));
     }
