@@ -48,10 +48,10 @@
 6. FileServer
 7. Cloud Gateway
 
-Также для FILES-APP необходимо:
-1) Поднять MinIO:
+Также необходимо:
+1) Поднять MinIO для файлового сервиса:
 minio server [Путь хранения MinIO-файлов] --console-address ":9001"
-2) Запустить Kafka (приведено для Windows):
+2) Запустить Kafka (приведено для Windows) для сервиса уведомлений:
 .\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
 .\bin\windows\kafka-server-start.bat .\config\server.properties
 
