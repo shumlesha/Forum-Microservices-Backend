@@ -1,6 +1,6 @@
-package com.example.securitylib.config;
+package com.example.notificationapp.config;
 
-import com.example.securitylib.props.MailProperties;
+import com.example.notificationapp.props.MailProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Properties;
 
 @Configuration
 @RequiredArgsConstructor

@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -71,14 +72,21 @@ public class FileServiceImpl implements FileService {
 
     @SneakyThrows
     private void putFile(String fileName, MultipartFile file) {
-        minioClient.putObject(
-                PutObjectArgs.builder()
-                        .bucket(bucketName)
-                        .object(fileName)
-                        .stream(file.getInputStream(), file.getSize(), -1)
-                        .contentType(file.getContentType())
-                        .build()
-        );
+        try {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(fileName)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+        }
+        catch (Exception e) {
+            log.info("Ошибка: {}", e.getMessage());
+            log.info(String.valueOf(e.getCause()));
+            log.info(Arrays.toString(e.getStackTrace()));
+        }
     }
 
     @Override

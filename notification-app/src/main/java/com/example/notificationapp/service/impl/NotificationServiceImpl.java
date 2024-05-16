@@ -1,0 +1,61 @@
+package com.example.notificationapp.service.impl;
+
+import com.example.common.dto.notifications.NotificationDTO;
+import com.example.notificationapp.models.Notification;
+import com.example.notificationapp.repository.NotificationRepository;
+import com.example.notificationapp.service.NotificationService;
+import com.example.securitylib.JwtUser;
+import lombok.RequiredArgsConstructor;
+import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class NotificationServiceImpl implements NotificationService {
+
+    private final NotificationRepository notificationRepository;
+
+    @Override
+    @Transactional
+    public void save(String receiver, NotificationDTO notificationDTO) {
+
+        Notification notification = new Notification();
+        notification.setTopic(notificationDTO.getTopic());
+        notification.setContent(notificationDTO.getContent());
+        notification.setReceiverEmail(receiver);
+        notification.setRead(false);
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    @Transactional
+    public Page<Notification> getNotifications(JwtUser jwtUser, String queryText, Pageable pageable) {
+        Page<Notification> notifications;
+        if (queryText == null || queryText.isBlank()) {
+            notifications = notificationRepository.findByReceiverEmailOrderByIsReadAsc(jwtUser.getEmail(), pageable);
+        }
+        else {
+            notifications = notificationRepository.findByReceiverEmailAndTopicContainingIgnoreCaseOrContentContainingIgnoreCase(jwtUser.getEmail(), queryText, queryText, pageable);
+        }
+
+        Set<UUID> ids = notifications.getContent().stream().map(Notification::getId).collect(Collectors.toSet());
+        notificationRepository.readNotifications(ids);
+
+        return notifications;
+    }
+
+    @Override
+    public Long getNonReadNotificationsCount(JwtUser jwtUser) {
+        return notificationRepository.countByReceiverEmailAndIsReadFalse(jwtUser.getEmail());
+    }
+
+}

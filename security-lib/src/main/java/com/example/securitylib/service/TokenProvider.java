@@ -21,6 +21,8 @@ public interface TokenProvider {
 
     String getId(String token);
 
+    String getIdFromEmailToken(String token);
+
     boolean checkUserConfirmation(String token);
 
     boolean validateEmailToken(String token);

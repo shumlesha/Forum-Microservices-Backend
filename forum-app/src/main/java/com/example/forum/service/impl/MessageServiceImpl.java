@@ -2,14 +2,20 @@ package com.example.forum.service.impl;
 
 import com.example.common.dto.AttachmentDTO;
 import com.example.common.dto.UserDTO;
+import com.example.common.dto.notifications.NotificationChannel;
+import com.example.common.dto.notifications.NotificationDTO;
+import com.example.common.dto.notifications.NotificationType;
 import com.example.common.exceptions.ResourceNotFoundException;
 import com.example.common.exceptions.TooManyAttachmentsException;
 import com.example.forum.dto.Message.CreateMessageModel;
 import com.example.forum.dto.Message.EditMessageModel;
 import com.example.forum.dto.Message.MessageFilter;
+import com.example.forum.kafka.service.KafkaSenderService;
 import com.example.forum.models.Attachment;
+import com.example.forum.models.FavoriteTopic;
 import com.example.forum.models.Message;
 import com.example.forum.models.Topic;
+import com.example.forum.repository.FavoriteTopicRepository;
 import com.example.forum.repository.MessageRepository;
 import com.example.forum.repository.TopicRepository;
 import com.example.forum.service.AttachmentService;
@@ -26,6 +32,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,6 +49,10 @@ public class MessageServiceImpl implements MessageService {
 
     //private final UserRepository userRepository;
     private final WebClient.Builder webClientBuilder;
+
+    private final KafkaSenderService kafkaSenderService;
+
+    private final FavoriteTopicRepository favoriteTopicRepository;
 
     @Override
     @Transactional
@@ -70,6 +81,8 @@ public class MessageServiceImpl implements MessageService {
         message.setAuthorEmail(author.getEmail());
         Message savedMessage = messageRepository.save(message);
         savedMessage.setAttachments(attachmentService.saveAllAttachs(savedMessage, createMessageModel.getAttachments(), author.getEmail()));
+
+        sendNewMessageNotificationToKafka(topic, author.getEmail());
 
         return savedMessage;
     }
@@ -124,5 +137,27 @@ public class MessageServiceImpl implements MessageService {
     public Message getById(UUID messageId) {
         return messageRepository.findById(messageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Сообщения с таким id не существует: " + messageId));
+    }
+
+
+    private void sendNewMessageNotificationToKafka(Topic topic, String email) {
+        List<String> emailsOfPeopleWhoLikesCurrentTopic = favoriteTopicRepository.findByTopic(topic)
+                .stream()
+                .map(FavoriteTopic::getOwnerEmail)
+                .collect(Collectors.toList());
+
+
+        emailsOfPeopleWhoLikesCurrentTopic.remove(email);
+
+        kafkaSenderService.send(
+                new NotificationDTO(
+                        "Новое сообщение в топике " + topic.getName(),
+                        "В топике " + topic.getName() + " появилось новое сообщение от " + email + ". Не забудьте прочитать!",
+                        null,
+                        Set.of(NotificationChannel.ALL),
+                        true,
+                        emailsOfPeopleWhoLikesCurrentTopic,
+                        NotificationType.COMMON)
+        );
     }
 }

@@ -3,6 +3,9 @@ package com.example.forum.service.impl;
 
 import com.example.common.WebClientErrorResponse;
 import com.example.common.dto.UserDTO;
+import com.example.common.dto.notifications.NotificationChannel;
+import com.example.common.dto.notifications.NotificationDTO;
+import com.example.common.dto.notifications.NotificationType;
 import com.example.common.enums.Role;
 import com.example.common.exceptions.ResourceNotFoundException;
 import com.example.common.exceptions.UserIsAlreadyModerator;
@@ -10,6 +13,7 @@ import com.example.common.exceptions.WebClientCustomException;
 
 import com.example.forum.dto.Admin.AppointModeratorModel;
 import com.example.forum.dto.Admin.RemoveModeratorModel;
+import com.example.forum.kafka.service.KafkaSenderService;
 import com.example.forum.models.Category;
 import com.example.forum.models.CategoryModerator;
 import com.example.forum.repository.CategoryModeratorRepository;
@@ -33,6 +37,9 @@ public class AdminServiceImpl implements AdminService {
     private final CategoryRepository categoryRepository;
     private final WebClient.Builder webClientBuilder;
     private final CategoryService categoryService;
+    private final KafkaSenderService kafkaSenderService;
+
+
     @Override
     @Transactional
     public void appointModerator(UUID userId, AppointModeratorModel appointModeratorModel) {
@@ -77,9 +84,17 @@ public class AdminServiceImpl implements AdminService {
                   .retrieve()
                   .bodyToMono(UserDTO.class).block();
         }
-        /*CategoryModerator categoryModerator = new CategoryModerator();
-        categoryModerator.setCategory(category);
-        categoryModerator.setModerator(user);*/
+
+        kafkaSenderService.send(
+                new NotificationDTO(
+                        "Вы назначены модератором",
+                        "Теперь вы являетесь модератором на категории " + category.getName() + ", а также её дочерних",
+                        user.getEmail(),
+                        Set.of(NotificationChannel.ALL),
+                        true,
+                        null,
+                        NotificationType.PERSONAL)
+        );
     }
 
     @Override
@@ -119,5 +134,16 @@ public class AdminServiceImpl implements AdminService {
                  .retrieve()
                  .bodyToMono(UserDTO.class).block();
         }
+
+        kafkaSenderService.send(
+                new NotificationDTO(
+                        "Вы сняты с модераторства",
+                        "Вы больше не являетесь модератором по категории " + category.getName(),
+                        user.getEmail(),
+                        Set.of(NotificationChannel.ALL),
+                        true,
+                        null,
+                        NotificationType.PERSONAL)
+        );
     }
 }

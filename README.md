@@ -10,7 +10,9 @@
 3. **GATEWAY:** шлюз API
 4. **USERS-APP:** сервис, отвечающий за управление пользователями со стороны Администратора
 5. **FILES-APP:** сервис, отвечающий за загрузку и скачивание файлов, связан с MinIO Bucket
-6. **EUREKA-REGISTRY-APP:** сервер, регистрирующий остальные микросервисы в Eureka
+6. **NOTIFICATION-APP:** сервис, отвечающий за прием уведомлений от других сервисов и рассылку их по указанным каналам
+7. **EUREKA-REGISTRY-APP:** сервер, регистрирующий остальные микросервисы в Eureka
+
 
 # Role-specific
 
@@ -40,13 +42,18 @@
 Необходимо запустить сервисы в следующем порядке:
 1. Eureka Registry
 2. ForumServer
-3. AuthServer
-4. UsersServer
-5. FileServer
-6. Cloud Gateway (1)
+3. NotificationsServer
+4. AuthServer
+5. UsersServer
+6. FileServer
+7. Cloud Gateway
 
-Также для FILES-APP необходимо поднять MinIO:
+Также для FILES-APP необходимо:
+1) Поднять MinIO:
 minio server [Путь хранения MinIO-файлов] --console-address ":9001"
+2) Запустить Kafka (приведено для Windows):
+.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+.\bin\windows\kafka-server-start.bat .\config\server.properties
 
 
 # Environments
@@ -59,6 +66,7 @@ minio server [Путь хранения MinIO-файлов] --console-address ":
 - **POSTGRES_PASSWORD:** пароль для подключения к БД Postgres
 - **POSTGRES_DATABASE:** имя базы данных, используемой в приложении
 - **JWT_SECRET:** секретный ключ для подписи JWT (можно сгенерировать на https://www.base64encode.net/)
+- **JWT_EMAIL_SECRET:** секретный ключ для подписи JWT-токенов для email-ссылок (можно сгенерировать на https://www.base64encode.net/)
 - **JWT_ACCESS:** время жизни access-токена в миллисекундах
 - **JWT_REFRESH:** время жизни refresh-токена в миллисекундах
 - **API_SECRET:** межсервисный API-ключ (также можно сгенерировать на https://www.base64encode.net/)
@@ -67,6 +75,9 @@ minio server [Путь хранения MinIO-файлов] --console-address ":
 - **MAIL_USERNAME:** gmail-адрес отправляющего от имени форума
 - **MAIL_PASSWORD:** пароль для MAIL_USERNAME
 - **MIGRATION_TYPE:** флаг ddl-auto
+- **KAFKA_BOOTSTRAP_SERVERS:** URL для Kafka
+- **KAFKA_SUBSCRIBED_TOPICS:** Топики, на которые могут подписываться консюмеры
+
 
 # API Documentation
 

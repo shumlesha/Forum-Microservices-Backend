@@ -4,16 +4,14 @@ package com.example.securitylib.service.impl;
 import com.example.common.WebClientErrorResponse;
 import com.example.common.dto.UserDTO;
 import com.example.common.dto.VerificationTokenDTO;
+import com.example.common.exceptions.BrokenVerifyLinkException;
 import com.example.common.exceptions.WebClientCustomException;
 import com.example.securitylib.dto.TokenResponse;
 import com.example.securitylib.props.JwtProperties;
 import com.example.securitylib.service.TokenProvider;
 import com.example.common.enums.Role;
 import com.example.common.exceptions.AccessDeniedException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -40,10 +38,12 @@ public class JwtTokenProvider implements TokenProvider {
     //private final UserService userService;
     private final WebClient.Builder webClientBuilder;
     private Key key;
+    private Key emailKey;
 
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+        this.emailKey = Keys.hmacShaKeyFor(jwtProperties.getEmailSecret().getBytes());
     }
 
     public String createAccessToken(UUID userId, String email, Set<Role> roles) {
@@ -125,6 +125,17 @@ public class JwtTokenProvider implements TokenProvider {
                 .toString();
     }
 
+    public String getIdFromEmailToken(String token) {
+        return Jwts
+                .parser()
+                .setSigningKey(emailKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id")
+                .toString();
+    }
+
     private String getEmail(String token) {
         return Jwts
                 .parser()
@@ -149,12 +160,10 @@ public class JwtTokenProvider implements TokenProvider {
         Date validity = new Date(now.getTime() + 600000);
 
         String createdToken = Jwts.builder()
-                .setSubject(email)
                 .claim("id", userId.toString())
-                .claim("type", "email")
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(key)
+                .signWith(emailKey)
                 .compact();
 
 
@@ -192,7 +201,7 @@ public class JwtTokenProvider implements TokenProvider {
     public boolean validateEmailToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(key)
+                    .setSigningKey(emailKey)
                     .build()
                     .parseClaimsJws(token);
 
@@ -202,12 +211,15 @@ public class JwtTokenProvider implements TokenProvider {
                     .bodyToMono(Boolean.class)
                     .block());
 
-            boolean typeIsEmail = (claims.getBody().get("type", String.class) != null);
+            //boolean typeIsEmail = (claims.getBody().get("type", String.class) != null);
 
-            return claims.getBody().getExpiration().after(new Date()) && (isTokenInDb || typeIsEmail);
+            return claims.getBody().getExpiration().after(new Date()) && (isTokenInDb);
         }
         catch (ExpiredJwtException e) {
             return false;
+        }
+        catch (MalformedJwtException e) {
+            throw new BrokenVerifyLinkException("Ссылка для подтверждения неверна");
         }
 
     }

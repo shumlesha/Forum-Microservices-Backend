@@ -1,8 +1,12 @@
 package com.example.users.service.impl;
 
 import com.example.common.dto.UserDTO;
+import com.example.common.dto.notifications.NotificationChannel;
+import com.example.common.dto.notifications.NotificationDTO;
+import com.example.common.dto.notifications.NotificationType;
 import com.example.common.enums.Role;
 import com.example.common.exceptions.ObjectAlreadyExistsException;
+import com.example.users.kafka.service.KafkaSenderService;
 import com.example.users.models.User;
 import com.example.users.repository.UserRepository;
 
@@ -26,7 +30,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final KafkaSenderService kafkaSenderService;
 
     @Override
     public User findByEmail(String email) {
@@ -114,6 +118,17 @@ public class UserServiceImpl implements UserService {
 
         user.setBanned(true);
         userRepository.save(user);
+
+        kafkaSenderService.send(
+                new NotificationDTO(
+                        "Вы получили бан в системе",
+                        "Вы получили бан на форуме и теперь не можете пользоваться его функционалом. За подробностями обратитесь к администратору",
+                        user.getEmail(),
+                        Set.of(NotificationChannel.ALL),
+                        true,
+                        null,
+                        NotificationType.PERSONAL)
+        );
     }
 
     @Override
@@ -132,6 +147,17 @@ public class UserServiceImpl implements UserService {
 
         user.setBanned(false);
         userRepository.save(user);
+
+        kafkaSenderService.send(
+                new NotificationDTO(
+                        "С вас снят бан в системе",
+                        "Вы разбанены в системе. Теперь вам доступны все функции форума",
+                        user.getEmail(),
+                        Set.of(NotificationChannel.ALL),
+                        true,
+                        null,
+                        NotificationType.PERSONAL)
+        );
     }
 
     @Override

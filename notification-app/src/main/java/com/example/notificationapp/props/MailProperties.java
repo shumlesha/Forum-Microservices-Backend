@@ -1,4 +1,4 @@
-package com.example.securitylib.props;
+package com.example.notificationapp.props;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

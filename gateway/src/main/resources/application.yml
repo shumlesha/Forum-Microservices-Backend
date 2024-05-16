@@ -30,6 +30,14 @@ spring:
             - AuthenticationFilter
             - RewritePath=/files/(?<segment>.*), /$\{segment}
 
+        - id: notifications-route
+          uri: lb://NOTIFICATION-APP
+          predicates:
+            - Path=/notifications/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/notifications/(?<segment>.*), /$\{segment}
+
         - id: auth-route
           uri: lb://AUTH-APP
           predicates:
@@ -74,3 +82,5 @@ springdoc:
         url: /users/v3/api-docs
       - name: FilesService
         url: /files/v3/api-docs
+      - name: NotificationsService
+        url: /notifications/v3/api-docs

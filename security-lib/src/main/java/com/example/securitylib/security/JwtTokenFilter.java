@@ -31,16 +31,17 @@ public class JwtTokenFilter extends GenericFilterBean {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             bearerToken = bearerToken.substring(7);
         }
-        if (bearerToken != null && jwtTokenProvider.validateEmailToken(bearerToken)) {
+        /*if (bearerToken != null && jwtTokenProvider.validateEmailToken(bearerToken)) {
             HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
             httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             httpResponse.setContentType("application/json");
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.getWriter().write("{ \"message\": \"Не пытайтесь авторизоваться по email-токену\" }");
             return;
-        }
+        }*/
         if (bearerToken != null && jwtTokenProvider.validateToken(bearerToken)) {
             try {
+                log.info("Удачная валидация!");
                 Authentication authentication = jwtTokenProvider.getAuthentication(bearerToken);
                 log.info(authentication.getName());
                 if (authentication != null) {

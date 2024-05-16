@@ -2,11 +2,16 @@ package com.example.auth.service.impl;
 
 
 import com.example.auth.dto.RegisterResponse;
+import com.example.auth.kafka.service.KafkaSenderService;
 import com.example.common.dto.UserDTO;
 import com.example.common.dto.VerificationTokenDTO;
+import com.example.common.dto.notifications.NotificationChannel;
+import com.example.common.dto.notifications.NotificationDTO;
+import com.example.common.dto.notifications.NotificationType;
 import com.example.common.exceptions.AccountNotConfirmedException;
 import com.example.common.exceptions.BrokenVerifyLinkException;
 import com.example.common.exceptions.WebClientCustomException;
+
 
 import com.example.securitylib.dto.TokenResponse;
 import com.example.auth.dto.UserLoginModel;
@@ -14,10 +19,11 @@ import com.example.common.WebClientErrorResponse;
 import com.example.common.enums.Role;
 
 import com.example.auth.service.AuthService;
-import com.example.securitylib.service.EmailService;
 import com.example.securitylib.service.TokenProvider;
+import com.example.securitylib.service.impl.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -40,7 +47,8 @@ public class AuthServiceImpl implements AuthService {
     private final WebClient.Builder webClientBuilder;
     private final TokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
+    private final MessageSource messageSource;
+    private final KafkaSenderService kafkaSenderService;
 
     public UserDTO create(UserDTO user) {
 
@@ -115,11 +123,32 @@ public class AuthServiceImpl implements AuthService {
                 .blockOptional();
 
         if (token.isEmpty()) {
-            emailService.sendEmail(createdUser);
+            kafkaSenderService.send(
+                    new NotificationDTO(
+                            getAuthTopic(),
+                            getAuthMessage(createdUser),
+                            createdUser.getEmail(),
+                            Set.of(NotificationChannel.EMAIL),
+                            false,
+                            null,
+                            NotificationType.PERSONAL)
+            );
+            //emailService.sendEmail(createdUser);
         }
         else {
-            if (!jwtTokenProvider.validateToken(token.get().getToken())) {
-                emailService.sendEmail(createdUser);
+            if (!jwtTokenProvider.validateEmailToken(token.get().getToken())) {
+                kafkaSenderService.send(
+                        new NotificationDTO(
+                                getAuthTopic(),
+                                getAuthMessage(createdUser),
+                                createdUser.getEmail(),
+                                Set.of(NotificationChannel.EMAIL),
+                                false,
+                                null,
+                                NotificationType.PERSONAL)
+                );
+                //emailS
+                //emailService.sendEmail(createdUser);
                 return new RegisterResponse(
                         createdUser.getId(),
                         createdUser.getEmail(),
@@ -171,7 +200,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponse confirmUser(String token) {
         if (jwtTokenProvider.validateEmailToken(token)) {
-            UUID userId = UUID.fromString(jwtTokenProvider.getId(token));
+            UUID userId = UUID.fromString(jwtTokenProvider.getIdFromEmailToken(token));
             UserDTO user = webClientBuilder.build().get()
                     .uri("http://users-app/api/internal/users/findById?id=" + userId)
                     .retrieve()
@@ -206,4 +235,20 @@ public class AuthServiceImpl implements AuthService {
         }
         throw new BrokenVerifyLinkException("Ссылка для подвтерждения неверна или завершился срок её действия");
     }
+
+    private String getAuthTopic() {
+        return messageSource.getMessage("email.registration.subject", null, Locale.getDefault());
+    }
+
+    private String getAuthMessage(UserDTO user) {
+        String bodyTemplate = messageSource.getMessage("email.registration.body", null, Locale.getDefault());
+        String confirmationLink = "http://localhost:8989/auth/api/accounts/confirm?token="
+                + jwtTokenProvider.createEmailToken(user.getId(), user.getEmail());
+
+        String bodyMessage = bodyTemplate
+                .replace("{fullName}", user.getFullName())
+                .replace("{verifLink}", confirmationLink);
+        return bodyMessage;
+    }
+
 }

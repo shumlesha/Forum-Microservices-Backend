@@ -23,6 +23,7 @@
         <module>eureka-service</module>
 		<module>gateway</module>
         <module>security-lib</module>
+		<module>notification-app</module>
     </modules>
 	<properties>
 		<java.version>17</java.version>
@@ -42,6 +43,9 @@
 		<eureka.version>2022.0.3</eureka.version>
 		<spring-openapi.version>2.0.2</spring-openapi.version>
 		<flyway.version>10.10.0</flyway.version>
+		<spring-kafka.version>3.1.4</spring-kafka.version>
+		<reactor-kafka.version>1.3.23</reactor-kafka.version>
+		<jcabi-xml.version>0.29.0</jcabi-xml.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -167,6 +171,21 @@
 				<artifactId>flyway-database-postgresql</artifactId>
 				<version>${flyway.version}</version>
 				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.kafka</groupId>
+				<artifactId>spring-kafka</artifactId>
+				<version>${spring-kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.projectreactor.kafka</groupId>
+				<artifactId>reactor-kafka</artifactId>
+				<version>${reactor-kafka.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jcabi</groupId>
+				<artifactId>jcabi-xml</artifactId>
+				<version>${jcabi-xml.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
