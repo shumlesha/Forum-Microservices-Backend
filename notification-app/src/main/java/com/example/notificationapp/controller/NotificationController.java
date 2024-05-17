@@ -31,7 +31,7 @@ public class NotificationController {
     private final NotificationMapper notificationMapper;
 
     @Operation(summary = "Get own notifications, using pagination, querytext, with sort (by notification creation time)")
-    @PostMapping
+    @PutMapping
     public ResponseEntity<Page<NotificationUserDTO>> getNotifications(@AuthenticationPrincipal JwtUser jwtUser,
                                                                       @RequestParam(required = false) String queryText,
                                                                       @ParameterObject @PageableDefault(sort = "createTime",
