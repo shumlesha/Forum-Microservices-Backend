@@ -47,7 +47,7 @@ public class NotificationServiceImpl implements NotificationService {
             notifications = notificationRepository.findByReceiverEmailOrderByIsReadAsc(jwtUser.getEmail(), pageable);
         }
         else {
-            notifications = notificationRepository.findByReceiverEmailAndTopicContainingIgnoreCaseOrContentContainingIgnoreCase(jwtUser.getEmail(), queryText, queryText, pageable);
+            notifications = notificationRepository.findByReceiverEmailAndTopicContainingIgnoreCaseOrContentContainingIgnoreCase(jwtUser.getEmail(), queryText, pageable);
         }
 
         Set<UUID> ids = notifications.getContent().stream().map(Notification::getId).collect(Collectors.toSet());
