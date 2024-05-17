@@ -3,7 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-.minio.sys
+.minio.sys/
 ### STS ###
 .apt_generated
 .classpath

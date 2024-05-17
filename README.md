@@ -32,6 +32,8 @@
 ## Users Database
 [<img src="docs/Users_DB.png" width="250" />](docs/Users_DB.png)
 
+## Notifications Database
+[<img src="docs/Notifications_DB.png" width="250"  />](docs/Notifications_DB.png)
 
 ### Migrations
 В .env файле используется переменная MIGRATION_TYPE=validate + Flyway
