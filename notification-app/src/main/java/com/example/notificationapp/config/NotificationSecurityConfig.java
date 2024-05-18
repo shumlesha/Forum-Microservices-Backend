@@ -48,33 +48,6 @@ public class NotificationSecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public SecurityFilterChain ApiFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .securityMatcher("/api/internal/**")
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .exceptionHandling(configurer ->
-                        configurer.authenticationEntryPoint(((request, response, authException) -> {
-                                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                                    response.getWriter().write("Unauthorized");
-                                }))
-                                .accessDeniedHandler(((request, response, accessDeniedException) -> {
-                                    response.setStatus(HttpStatus.FORBIDDEN.value());
-                                    response.getWriter().write("Unauthorized");
-                                }))
-                )
-                .authorizeHttpRequests(configurer ->
-                        configurer
-                                .anyRequest().authenticated()
-                )
-                .anonymous(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new ApiKeyFilter(apiProperties), UsernamePasswordAuthenticationFilter.class);
-        return httpSecurity.build();
-    }
 
 
     @Bean
@@ -126,13 +99,11 @@ public class NotificationSecurityConfig {
     @Bean
     public OpenAPI customOpenAPI(@Value("${gateway.host}") String gatewayHost) {
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth").addList("apiKeyAuth"))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(
                         new Components()
                                 .addSecuritySchemes("bearerAuth", new SecurityScheme().type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer").bearerFormat("JWT"))
-                                .addSecuritySchemes("apiKeyAuth", new SecurityScheme().type(SecurityScheme.Type.APIKEY)
-                                        .in(SecurityScheme.In.HEADER).name("API-KEY"))
                 )
                 .addServersItem(new Server().url(gatewayHost + "/notifications"));
     }
