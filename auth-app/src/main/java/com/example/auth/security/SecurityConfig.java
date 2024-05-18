@@ -60,10 +60,7 @@ public class SecurityConfig {
                                 }))
                 )
                 .authorizeHttpRequests(configurer ->
-                        configurer.requestMatchers("/**","/api/accounts/login",
-                                        "/api/accounts/register",
-                                        "/api/accounts/refresh",
-                                        "api/internal/users/findByEmail",
+                        configurer.requestMatchers("/api/accounts/*",
 
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**").permitAll()
