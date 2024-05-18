@@ -8,6 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses={TopicMapper.class})
 public interface FavoriteTopicMapper {
 
-    @Mapping(source = "topic", target = "topicDTO")
+    @Mapping(source = "topic", target = "topic")
     FavoriteTopicDTO toDTO(FavoriteTopic favoriteTopic);
 }

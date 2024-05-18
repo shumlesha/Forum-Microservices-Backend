@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class FavoriteTopicDTO {
     private UUID id;
-    private TopicDTO topicDTO;
+    private TopicDTO topic;
     private String ownerEmail;
     private LocalDateTime createTime;
 }
