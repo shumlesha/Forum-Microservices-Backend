@@ -3,12 +3,14 @@ package com.example.notificationapp.controller;
 
 import com.example.notificationapp.dto.NotificationUserDTO;
 import com.example.notificationapp.dto.NotificationsCountDTO;
+import com.example.notificationapp.dto.ReadNotificationsDTO;
 import com.example.notificationapp.mapper.NotificationMapper;
 import com.example.notificationapp.models.Notification;
 import com.example.notificationapp.service.NotificationService;
 import com.example.securitylib.JwtUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.ws.rs.PUT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
@@ -31,7 +33,7 @@ public class NotificationController {
     private final NotificationMapper notificationMapper;
 
     @Operation(summary = "Get own notifications, using pagination, querytext, with sort (by notification creation time)")
-    @PutMapping
+    @GetMapping
     public ResponseEntity<Page<NotificationUserDTO>> getNotifications(@AuthenticationPrincipal JwtUser jwtUser,
                                                                       @RequestParam(required = false) String queryText,
                                                                       @ParameterObject @PageableDefault(sort = "createTime",
@@ -44,6 +46,16 @@ public class NotificationController {
     @GetMapping("/nonread-count")
     public ResponseEntity<NotificationsCountDTO> getNonReadNotificationsCount(@AuthenticationPrincipal JwtUser jwtUser) {
         return ResponseEntity.ok(new NotificationsCountDTO(notificationService.getNonReadNotificationsCount(jwtUser)));
+    }
+
+
+    @Operation(summary = "Read notifications (mark them as read). Use it to button 'mark ad read' ")
+    @PutMapping
+    public ResponseEntity<?> readNotifications(@AuthenticationPrincipal JwtUser jwtUser,
+                                               @RequestBody ReadNotificationsDTO readNotificationsDTO) {
+        notificationService.readNotifications(jwtUser, readNotificationsDTO.getNotificationIds());
+
+        return ResponseEntity.ok().build();
     }
 
 }

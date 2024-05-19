@@ -21,8 +21,8 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     Page<Notification> findByReceiverEmailOrderByIsReadAsc(String email, Pageable pageable);
 
     @Modifying
-    @Query("update Notification notif set notif.isRead = true where (notif.id in ?1 and notif.isRead = false)")
-    void readNotifications(Set<UUID> notificationIds);
+    @Query("update Notification notif set notif.isRead = true where (notif.receiverEmail = ?1 and notif.id in ?2 and notif.isRead = false)")
+    void readNotifications(String email, Set<UUID> notificationIds);
 
     long countByReceiverEmailAndIsReadFalse(String email);
 }

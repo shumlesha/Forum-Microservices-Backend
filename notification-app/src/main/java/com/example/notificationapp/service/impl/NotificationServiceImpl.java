@@ -39,7 +39,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    @Transactional
     public Page<Notification> getNotifications(JwtUser jwtUser, String queryText, Pageable pageable) {
         Page<Notification> notifications;
         log.info(pageable.toString());
@@ -50,15 +49,18 @@ public class NotificationServiceImpl implements NotificationService {
             notifications = notificationRepository.findByReceiverEmailAndTopicContainingIgnoreCaseOrContentContainingIgnoreCase(jwtUser.getEmail(), queryText, pageable);
         }
 
-        Set<UUID> ids = notifications.getContent().stream().map(Notification::getId).collect(Collectors.toSet());
-        notificationRepository.readNotifications(ids);
-
         return notifications;
     }
 
     @Override
     public Long getNonReadNotificationsCount(JwtUser jwtUser) {
         return notificationRepository.countByReceiverEmailAndIsReadFalse(jwtUser.getEmail());
+    }
+
+    @Override
+    @Transactional
+    public void readNotifications(JwtUser jwtUser, Set<UUID> ids) {
+        notificationRepository.readNotifications(jwtUser.getEmail(), ids);
     }
 
 }
