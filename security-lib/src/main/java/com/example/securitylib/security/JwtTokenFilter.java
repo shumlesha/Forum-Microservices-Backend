@@ -1,6 +1,7 @@
 package com.example.securitylib.security;
 
 import com.example.common.exceptions.ResourceNotFoundException;
+import com.example.common.exceptions.WebClientCustomException;
 import com.example.securitylib.service.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -68,7 +69,7 @@ public class JwtTokenFilter extends GenericFilterBean {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-            catch (ResourceNotFoundException ignored) {
+            catch (ResourceNotFoundException | WebClientCustomException ignored) {
 
             }
         }

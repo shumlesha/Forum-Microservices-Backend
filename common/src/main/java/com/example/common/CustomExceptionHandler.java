@@ -35,9 +35,10 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(FileUploadException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleFileUpload(FileUploadException exception) {
         log.error(exception.getMessage(), exception);
-        return new ErrorResponse(exception.getStatusCode(), exception.getMessage());
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler(ObjectAlreadyExistsException.class)

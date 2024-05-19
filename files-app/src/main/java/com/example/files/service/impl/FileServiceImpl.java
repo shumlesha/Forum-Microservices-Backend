@@ -2,19 +2,15 @@ package com.example.files.service.impl;
 
 import com.example.common.dto.AttachmentDTO;
 import com.example.common.dto.AttachmentsRequest;
-import com.example.common.exceptions.AccessDeniedException;
 import com.example.common.exceptions.NotFileOwnerException;
-import com.example.files.FileRepository;
-import com.example.files.dto.FileDTO;
+import com.example.files.repository.FileRepository;
 import com.example.common.exceptions.FileNotFoundException;
 import com.example.common.exceptions.FileUploadException;
 import com.example.files.model.File;
 import com.example.files.model.FileWrapper;
 import com.example.files.service.FileService;
 import com.example.files.service.props.MinioProperties;
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,7 +45,7 @@ public class FileServiceImpl implements FileService {
     @Transactional
     public UUID saveFile(MultipartFile file, String email) {
         if (file.isEmpty() || file.getOriginalFilename() == null) {
-            throw new FileUploadException(HttpStatus.BAD_REQUEST, "Неверный формат файла");
+            throw new FileUploadException("Неверный формат файла");
         }
 
         String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
@@ -72,6 +67,10 @@ public class FileServiceImpl implements FileService {
 
     @SneakyThrows
     private void putFile(String fileName, MultipartFile file) {
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+        }
+
         try {
             minioClient.putObject(
                     PutObjectArgs.builder()
@@ -83,16 +82,14 @@ public class FileServiceImpl implements FileService {
             );
         }
         catch (Exception e) {
-            log.info("Ошибка: {}", e.getMessage());
-            log.info(String.valueOf(e.getCause()));
-            log.info(Arrays.toString(e.getStackTrace()));
+            throw new FileUploadException("Произошла ошибка при загрузке файла");
         }
     }
 
     @Override
     public FileWrapper downloadFile(UUID fileId) {
         File fileObj = fileRepository.findById(fileId)
-                .orElseThrow(() -> new FileNotFoundException(HttpStatus.NOT_FOUND, "Не найдено файла с таким id:  " + fileId));
+                .orElseThrow(() -> new FileNotFoundException("Не найдено файла с таким id:  " + fileId));
         try {
             InputStream inputStream = minioClient.getObject(
                     GetObjectArgs.builder()
@@ -107,7 +104,7 @@ public class FileServiceImpl implements FileService {
             fileInfo.setFileName(fileObj.getName());
             return fileInfo;
         } catch (Exception e) {
-            throw new FileUploadException(HttpStatus.INTERNAL_SERVER_ERROR, "Не удалось скачать файл");
+            throw new FileUploadException("Не удалось скачать файл");
         }
     }
 
@@ -123,7 +120,7 @@ public class FileServiceImpl implements FileService {
         String email = attachRequest.getEmail();
         for (UUID fileId: attachRequest.getAttachments()) {
             File fileObj = fileRepository.findById(fileId)
-                   .orElseThrow(() -> new FileNotFoundException(HttpStatus.NOT_FOUND, "Не найдено файла с таким id:  " + fileId));
+                   .orElseThrow(() -> new FileNotFoundException("Не найдено файла с таким id:  " + fileId));
 
             if (!email.equals(fileObj.getOwnerEmail())) {
                 throw new NotFileOwnerException("Вы не являетесь владельцем одного из прикрепленных файлов");
